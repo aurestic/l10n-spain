@@ -83,6 +83,17 @@
                     <LegalEntity t-if="seller_type == 'J'">
                         <CorporateName t-esc="company_partner.name"/>
                         <TradeName t-esc="company_partner.name"/>
+                        <t t-if="company_partner.es_registro_mercantil">
+                            <RegistrationData>
+                                <Book t-esc="company_partner.es_libro"/>
+                                <RegisterOfCompaniesLocation t-esc="company_partner.es_registro_mercantil"/>
+                                <Sheet t-esc="company_partner.es_hoja"/>
+                                <Folio t-esc="company_partner.es_folio"/>
+                                <Section t-esc="company_partner.es_seccion"/>
+                                <Volume t-esc="company_partner.es_tomo"/>
+                                <AdditionalRegistrationData t-esc="''"/>
+                            </RegistrationData>
+                        </t>
                         <t t-call="l10n_es_facturae.address_contact">
                             <t t-set="partner" t-value="company_partner"/>
                         </t>
@@ -205,21 +216,23 @@
                         </InvoiceLine>
                     </Items>
                     <PaymentDetails t-if="invoice.payment_mode_id">
-                        <t t-foreach="invoice.move_id.line_id" t-as="move">
-                            <!-- QWeb won't pass t-set assigned vars as context through filtered()
-                            due to security concerns; use t-if on each item instead -->
-                            <Installment t-if="move.account_id == invoice.account_id">
-                                <InstallmentDueDate t-esc="move.date_maturity or invoice.date_invoice"/>
-                                <!-- TODO: Esto se tendrá que revisar cuando se implementen las rectificativas -->
-                                <InstallmentAmount t-esc="'%.2f' % (move.debit if move.debit > move.credit else -move.credit)"/>
-                                <PaymentMeans t-esc="invoice.payment_mode_id.facturae_code"/>
-                                <AccountToBeDebited t-if="invoice.payment_mode_id.facturae_code == '02'">
-                                    <IBAN t-esc="invoice.partner_bank_id.iban"/>
-                                </AccountToBeDebited>
-                                <AccountToBeCredited t-if="invoice.payment_mode_id.facturae_code != '02'">
-                                    <IBAN t-esc="invoice.payment_mode_id.bank_id.iban"/>
-                                </AccountToBeCredited>
-                            </Installment>
+                            <t t-foreach="invoice.move_id.line_id" t-as="move">
+                                <!-- QWeb won't pass t-set assigned vars as context through filtered()
+                                due to security concerns; use t-if on each item instead -->
+                                <Installment t-if="move.account_id == invoice.account_id">
+                                    <InstallmentDueDate t-esc="move.date_maturity or invoice.date_invoice"/>
+                                    <!-- TODO: Esto se tendrá que revisar cuando se implementen las rectificativas -->
+                                    <InstallmentAmount t-esc="'%.2f' % (move.debit if move.debit > move.credit else -move.credit)"/>
+                                    <PaymentMeans t-esc="invoice.payment_mode_id.facturae_code"/>
+                                    <t t-if="invoice.payment_mode_id.facturae_code in ('02','04')">
+                                        <AccountToBeDebited t-if="invoice.payment_mode_id.facturae_code == '02'">
+                                           <IBAN t-esc="invoice.partner_bank_id.iban"/>
+                                        </AccountToBeDebited>
+                                        <AccountToBeCredited t-if="invoice.payment_mode_id.facturae_code == '04'">
+                                            <IBAN t-esc="invoice.bank_id_cta_cargo.iban"/>
+                                        </AccountToBeCredited>
+                                    </t>
+                                </Installment>
                         </t>
                     </PaymentDetails>
                     <AdditionalData t-if="invoice.comment">
