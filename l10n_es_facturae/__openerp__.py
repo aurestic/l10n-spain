@@ -23,6 +23,7 @@
         "base_iso3166",
         "base_vat",
         "report_xml",
+        "l10n_es_partner_mercantil",
     ],
     "data": [
         "views/res_partner_view.xml",
