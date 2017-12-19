@@ -68,6 +68,23 @@ class CreateFacturae(models.TransientModel):
                   "of the problem : %s") % unicode(e))
         return True
 
+    @api.model
+    def certs_data_dir(self):
+        import openerp.release as release
+        from openerp.tools import config
+        add_dir = os.path.join(config['data_dir'], 'l10n_es_facturae')
+        d = os.path.join(add_dir, release.series)
+        if not os.path.exists(d):
+            try:
+                # bootstrap parent dir +rwx
+                if not os.path.exists(add_dir):
+                    os.makedirs(add_dir, 0700)
+                # try to make +rx placeholder dir, will need manual +w to activate it
+                os.makedirs(d, 0700)
+            except OSError:
+                logging.getLogger(__name__).debug('Failed to create addons data dir %s', d)
+        return d
+
     @api.multi
     def create_facturae_file(self):
 
@@ -81,10 +98,13 @@ class CreateFacturae(models.TransientModel):
         def _sign_document():
             path = os.path.realpath(os.path.dirname(__file__))
             path += '/../java/'
+            #se necesita un directorio con permisos de escritura,
+            #cogemos el del sistema
+            path2 = self.certs_data_dir() + '/'
             # Almacenamos nuestra cadena XML en un fichero y
             # creamos los ficheros auxiliares.
-            file_name_unsigned = path + 'unsigned_' + file_name
-            file_name_signed = path + file_name
+            file_name_unsigned = path2 + 'unsigned_' + file_name
+            file_name_signed = path2 + file_name
             file_unsigned = open(file_name_unsigned, "w+")
             file_unsigned.write(xml_facturae)
             file_unsigned.close()
@@ -92,7 +112,7 @@ class CreateFacturae(models.TransientModel):
             # Extraemos los datos del certificado para la firma electrónica.
             certificate = invoice.company_id.facturae_cert
             cert_passwd = invoice.company_id.facturae_cert_password
-            cert_path = path + 'certificado.pfx'
+            cert_path = path2 + 'certificado.pfx'
             cert_file = open(cert_path, 'wb')
             cert_file.write(certificate.decode('base64'))
             cert_file.close()
