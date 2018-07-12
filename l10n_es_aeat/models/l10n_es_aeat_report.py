@@ -95,6 +95,9 @@ class L10nEsAeatReport(models.AbstractModel):
     contact_phone = fields.Char(
         string="Phone", size=9, required=True, readonly=True,
         states={'draft': [('readonly', False)]})
+    contact_email = fields.Char(
+        string="Contact email", size=50, readonly=True,
+        states={'draft': [('readonly', False)]})
     representative_vat = fields.Char(
         string="L.R. VAT number", size=9, readonly=True,
         help="Legal Representative VAT number.",
@@ -206,6 +209,7 @@ class L10nEsAeatReport(models.AbstractModel):
             self.company_vat = re.match(
                 "(ES){0,1}(.*)", self.company_id.vat).groups()[1]
         self.contact_name = self.env.user.name
+        self.contact_email = self.env.user.email
         self.contact_phone = self._filter_phone(
             self.env.user.partner_id.phone or
             self.env.user.partner_id.mobile or
@@ -288,7 +292,7 @@ class L10nEsAeatReport(models.AbstractModel):
         return self.search([
             ('year', '=', self.year),
             ('date_start', '<', date),
-        ]) or None
+        ])
 
     @api.multi
     def calculate(self):
@@ -305,7 +309,7 @@ class L10nEsAeatReport(models.AbstractModel):
     def _prepare_move_vals(self):
         self.ensure_one()
         return {
-            'date': fields.Date.today(),
+            'date': self.date_end,
             'journal_id': self.journal_id.id,
             'ref': self.name,
             'company_id': self.company_id.id,
@@ -416,3 +420,16 @@ class L10nEsAeatReport(models.AbstractModel):
         if not date:
             return ''
         return datetime.strftime(fields.Date.from_string(date), "%d%m%Y")
+
+    @api.model
+    def get_html(self):
+        """ Render dynamic view from ir.action.client"""
+        result = {}
+        rcontext = {}
+        rec = self.browse(self.env.context.get('active_id'))
+        if rec:
+            rcontext['o'] = rec
+            result['html'] = self.env.ref(self.env.context.get(
+                'template_name')).render(
+                rcontext)
+        return result
