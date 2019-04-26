@@ -28,7 +28,7 @@ class AccountInvoiceIntegration(models.Model):
             )
             cert.set_ca_certificates(None)
             client = Client(
-                wsdl=self.env["ir.config_parameter"].get_param(
+                wsdl=self.env["ir.config_parameter"].sudo().get_param(
                     "account.invoice.face.server", default=None),
                 wsse=MemorySignature(
                     cert.export(),
@@ -68,7 +68,7 @@ class AccountInvoiceIntegration(models.Model):
             )
             cert.set_ca_certificates(None)
             client = Client(
-                wsdl=self.env["ir.config_parameter"].get_param(
+                wsdl=self.env["ir.config_parameter"].sudo().get_param(
                     "account.invoice.face.server", default=None),
                 wsse=MemorySignature(
                     cert.export(),
@@ -103,7 +103,7 @@ class AccountInvoiceIntegration(models.Model):
             )
             cert.set_ca_certificates(None)
             client = Client(
-                wsdl=self.env["ir.config_parameter"].get_param(
+                wsdl=self.env["ir.config_parameter"].sudo().get_param(
                     "account.invoice.face.server", default=None),
                 wsse=MemorySignature(
                     cert.export(),
@@ -120,7 +120,7 @@ class AccountInvoiceIntegration(models.Model):
             )
             anexos_list = []
             if self.integration_id.attachment_ids:
-                for attachment in self.attachment_ids:
+                for attachment in self.integration_id.attachment_ids:
                     anexo = client.get_type('ns0:AnexoFile')(
                         attachment.datas,
                         attachment.datas_fname,

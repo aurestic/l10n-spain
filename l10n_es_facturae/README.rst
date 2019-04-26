@@ -30,14 +30,15 @@ Informacion sobre el formato:
 Instalación
 ===========
 
-Este módulo depende del módulo *account_payment_partner*, *account_banking_mandate* y sus 
+Este módulo depende del módulo *account_payment_partner*, *account_banking_mandate* y sus
 dependencias, que se encuentran en https://github.com/OCA/bank-payment.
 
 Para generar el archivo XML, hace falta el módulo *report_xml* que se encuentra
 en https://github.com/OCA/reporting-engine.
 
 En el caso de querer firmar el formato FacturaE desde Odoo, debe instalarse la
-última versión de xmlsig mediante el comando ´pip install xmlsig´
+última versión de xmlsig mediante el comando ´pip install xmlsig´. La versión
+mínima de la misma debe ser 0.1.2.
 
 
 Configuración
@@ -73,6 +74,8 @@ Problemas conocidos / Hoja de ruta
 * Ver la posibilidad de exportar varias facturas juntas.
 * Soportar formato Factura-E v3.2.1.
 * Las facturas con recargo de equivalencia no generan un formato correcto.
+* Debido a un cambio de certificados, mal hechos desde Camerfirma, se ha eliminado
+  el cálculo automático del hash del método de firma.
 
 
 Credits
@@ -90,6 +93,7 @@ Contributors
 * Pedro M. Baeza <pedro.baeza@serviciosbaeza.com>
 * Javi Melendez <javimelex@gmail.com>
 * Enric Tobella <etobella@creublanca.es>
+* Adrián Gómez <adrian.gomez@pesol.es>
 
 Maintainer
 ----------

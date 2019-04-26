@@ -120,8 +120,19 @@ class AccountInvoice(models.Model):
             # ('S', 'By substitution'), - Removed as not fully supported
             ('I', 'By differences'),
         ],
-        string="SII Refund Type", default=_default_sii_refund_type,
+        string="SII Refund Type",
+        default=lambda self: self._default_sii_refund_type(),
         oldname='refund_type',
+    )
+    sii_refund_specific_invoice_type = fields.Selection(
+        selection=[
+            ('R1', 'Error based on law and Art. 80 One and Two LIVA (R1)'),
+            ('R2', 'Art. 80 Three LIVA - Bankruptcy (R2)'),
+            ('R3', 'Art. 80 Four LIVA - Bad debt (R3)'),
+        ],
+        help="Fill this field when the refund are one of the specific cases"
+             " of article 80 of LIVA for notifying to SII with the proper"
+             " invoice type.",
     )
     sii_account_registration_date = fields.Date(
         string='SII account registration date', readonly=True, copy=False,
@@ -479,7 +490,7 @@ class AccountInvoice(models.Model):
                     if exempt_cause:
                         det_dict['CausaExencion'] = exempt_cause
                     det_dict['BaseImponible'] += (
-                        tax_line.base_company * sign)
+                        round(tax_line.base_company, 2) * sign)
                 else:
                     sub_dict.setdefault('NoExenta', {
                         'TipoNoExenta': (
@@ -505,7 +516,7 @@ class AccountInvoice(models.Model):
                     'NoSujeta', {default_no_taxable_cause: 0},
                 )
                 nsub_dict[default_no_taxable_cause] += (
-                    tax_line.base_company * sign)
+                    round(tax_line.base_company, 2) * sign)
             if tax in (taxes_sfess + taxes_sfesse + taxes_sfesns):
                 type_breakdown = taxes_dict.setdefault(
                     'DesgloseTipoOperacion', {
@@ -525,7 +536,7 @@ class AccountInvoice(models.Model):
                     if exempt_cause:
                         det_dict['CausaExencion'] = exempt_cause
                     det_dict['BaseImponible'] += (
-                        tax_line.base_company * sign)
+                        round(tax_line.base_company, 2) * sign)
                 if tax in taxes_sfess:
                     # TODO l10n_es_ no tiene impuesto ISP de servicios
                     # if tax in taxes_sfesisps:
@@ -598,7 +609,7 @@ class AccountInvoice(models.Model):
                     'DesgloseIVA', {'DetalleIVA': []},
                 )
                 sfrns_dict['DetalleIVA'].append({
-                    'BaseImponible': sign * tax_line.base_company,
+                    'BaseImponible': sign * round(tax_line.base_company, 2),
                 })
             elif tax in taxes_sfrsa:
                 sfrsa_dict = taxes_dict.setdefault(
@@ -701,10 +712,14 @@ class AccountInvoice(models.Model):
         if not cancel:
             # Check if refund type is 'By differences'. Negative amounts!
             sign = self._get_sii_sign()
-            if partner.sii_simplified_invoice:
-                tipo_factura = 'R5' if self.type == 'out_refund' else 'F2'
+            simplied = partner.sii_simplified_invoice
+            if self.type == 'out_refund':
+                if self.sii_refund_specific_invoice_type:
+                    tipo_factura = self.sii_refund_specific_invoice_type
+                else:
+                    tipo_factura = 'R5' if simplied else 'R4'
             else:
-                tipo_factura = 'R4' if self.type == 'out_refund' else 'F1'
+                tipo_factura = 'F2' if simplied else 'F1'
             inv_dict["FacturaExpedida"] = {
                 "TipoFactura": tipo_factura,
                 "ClaveRegimenEspecialOTrascendencia": (
@@ -869,7 +884,7 @@ class AccountInvoice(models.Model):
     def _connect_params_sii(self, mapping_key):
         self.ensure_one()
         params = {
-            'wsdl': self.env['ir.config_parameter'].get_param(
+            'wsdl': self.env['ir.config_parameter'].sudo().get_param(
                 self.SII_WDSL_MAPPING[mapping_key], False
             ),
             'port_name': self.SII_PORT_NAME_MAPPING[mapping_key],
@@ -1015,8 +1030,8 @@ class AccountInvoice(models.Model):
                 invoice = env['account.invoice'].browse(invoice.id)
                 inv_vals.update({
                     'sii_send_failed': True,
-                    'sii_send_error': fault[:60],
-                    'sii_return': fault,
+                    'sii_send_error': repr(fault)[:60],
+                    'sii_return': repr(fault),
                 })
                 invoice.write(inv_vals)
                 new_cr.commit()
@@ -1024,9 +1039,21 @@ class AccountInvoice(models.Model):
                 raise
 
     @api.multi
+    def _sii_invoice_dict_modified(self):
+        self.ensure_one()
+        inv_dict = self._get_sii_invoice_dict()
+        sii_content_sent = json.dumps(inv_dict, indent=4)
+        return sii_content_sent == self.sii_content_sent
+
+    @api.multi
     def invoice_validate(self):
         res = super(AccountInvoice, self).invoice_validate()
         for invoice in self.filtered('sii_enabled'):
+            if invoice.sii_state in ['sent_modified', 'sent'] and \
+                    self._sii_invoice_dict_modified():
+                if invoice.sii_state == 'sent_modified':
+                    invoice.sii_state = 'sent'
+                continue
             if invoice.sii_state == 'sent':
                 invoice.sii_state = 'sent_modified'
             elif invoice.sii_state == 'cancelled':
@@ -1091,8 +1118,8 @@ class AccountInvoice(models.Model):
                 invoice = env['account.invoice'].browse(invoice.id)
                 inv_vals.update({
                     'sii_send_failed': True,
-                    'sii_send_error': fault[:60],
-                    'sii_return': fault,
+                    'sii_send_error': repr(fault)[:60],
+                    'sii_return': repr(fault),
                 })
                 invoice.write(inv_vals)
                 new_cr.commit()
