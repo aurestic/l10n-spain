@@ -5,4 +5,4 @@ unicodecsv
 xlrd
 zeep
 pyOpenSSL
-cffi=1.12.3
+cffi==1.12.3
