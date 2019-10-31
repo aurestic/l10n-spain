@@ -10,6 +10,7 @@ from calendar import monthrange
 from odoo import _, api, fields, exceptions, models
 from odoo.tools import config
 from datetime import datetime
+from .spanish_states_mapping import SPANISH_STATES as ss
 
 
 class L10nEsAeatReport(models.AbstractModel):
@@ -20,6 +21,7 @@ class L10nEsAeatReport(models.AbstractModel):
     _period_quarterly = True
     _period_monthly = True
     _period_yearly = False
+    SPANISH_STATES = ss
 
     def _default_company_id(self):
         company_obj = self.env['res.company']
@@ -127,7 +129,8 @@ class L10nEsAeatReport(models.AbstractModel):
             ('posted', 'Posted'),
             ('cancelled', 'Cancelled'),
         ], string='State', default='draft', readonly=True)
-    name = fields.Char(string="Report identifier", size=13, oldname='sequence')
+    name = fields.Char(string="Report identifier", size=13, oldname='sequence',
+                       copy=False)
     model_id = fields.Many2one(
         comodel_name="ir.model", string="Model",
         compute='_compute_report_model', oldname='model')
