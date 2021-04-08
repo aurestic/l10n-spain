@@ -195,7 +195,7 @@
                             <ItemDescription t-esc="line.name"/>
                             <Quantity t-esc="line.quantity"/>
                             <UnitPriceWithoutTax t-esc="'%.6f' % line.price_unit"/>
-                            <TotalCost t-esc="'%.6f' % (line.quantity * line.price_unit)"/>
+                            <TotalCost t-esc="'%.2f' % (line.quantity * line.price_unit)"/>
                             <DiscountsAndRebates>
                                 <Discount>
                                     <DiscountReason t-esc="'Descuento'"/>
