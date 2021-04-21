@@ -59,4 +59,7 @@ class AccountInvoice(models.Model):
                 self.company_id.vat[2:]
             res['FacturaRecibida']['Contraparte']['NombreRazon'] = \
                 self.company_id.name
+            res["FacturaRecibida"].pop("ImporteTotal", False)
+            if self.registration_key.code == '13':
+                res['FacturaRecibida']['TipoFactura'] = 'F6'
         return res
