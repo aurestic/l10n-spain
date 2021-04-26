@@ -60,6 +60,6 @@ class AccountInvoice(models.Model):
             res['FacturaRecibida']['Contraparte']['NombreRazon'] = \
                 self.company_id.name
             res["FacturaRecibida"].pop("ImporteTotal", False)
-            if self.registration_key.code == '13':
+            if self.sii_registration_key.code == '13':
                 res['FacturaRecibida']['TipoFactura'] = 'F6'
         return res
