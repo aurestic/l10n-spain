@@ -200,7 +200,7 @@
                                 <Discount>
                                     <DiscountReason t-esc="'Descuento'"/>
                                     <DiscountRate t-esc="'%.4f' % line.discount"/>
-                                    <DiscountAmount t-esc="'%.6f' % (line.price_unit * line.quantity - line.price_subtotal)"/>
+                                    <DiscountAmount t-esc="'%.6f' % (round(line.price_unit * line.quantity,2) - line.price_subtotal)"/>
                                 </Discount>
                             </DiscountsAndRebates>
                             <GrossAmount t-esc="'%.6f' % line.price_subtotal"/>
