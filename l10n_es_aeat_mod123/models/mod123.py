@@ -11,6 +11,7 @@ class L10nEsAeatMod123Report(models.Model):
     _name = 'l10n.es.aeat.mod123.report'
 
     number = fields.Char(default='123')
+    export_config = fields.Many2one(default=lambda s: s._get_export_conf())
     casilla_01 = fields.Integer(
         string='[01] Número de perceptores', readonly=True,
         states={'calculated': [('readonly', False)]},
@@ -63,6 +64,14 @@ class L10nEsAeatMod123Report(models.Model):
                    ('N', 'Negativa')],
         string='Tipo de declaración', readonly=True,
         states={'draft': [('readonly', False)]}, required=True)
+
+    @api.model
+    def _get_export_conf(self):
+        try:
+            return self.env.ref(
+                'l10n_es_aeat_mod123.aeat_mod123_main_export_config').id
+        except ValueError:
+            return self.env['aeat.model.export.config']
 
     @api.depends('casilla_03', 'casilla_05')
     def _compute_casilla06(self):
