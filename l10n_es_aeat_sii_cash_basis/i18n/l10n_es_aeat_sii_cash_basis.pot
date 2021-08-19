@@ -1,0 +1,154 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* l10n_es_aeat_sii_cash_basis
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 10.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.actions.act_window,name:l10n_es_aeat_sii_cash_basis.action_aeat_sii_payment_mode_key
+#: model:ir.ui.menu,name:l10n_es_aeat_sii_cash_basis.menu_aeat_sii_payment_mode_key
+msgid "Aeat SII Payment Mode Keys"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.ui.view,arch_db:l10n_es_aeat_sii_cash_basis.view_search_aeat_sii_payment_mode_key
+#: model:ir.ui.view,arch_db:l10n_es_aeat_sii_cash_basis.view_tree_aeat_sii_payment_mode_key
+msgid "Aeat SII Registration Keys"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:aeat.sii.payment.mode.key,name:l10n_es_aeat_sii_cash_basis.aeat_sii_payment_mode_key_02
+msgid "Cheque"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_aeat_sii_payment_mode_key_code
+msgid "Code"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_aeat_sii_payment_mode_key_create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_aeat_sii_payment_mode_key_create_date
+msgid "Created on"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_aeat_sii_payment_mode_key_display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_aeat_sii_payment_mode_key_id
+msgid "ID"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model,name:l10n_es_aeat_sii_cash_basis.model_account_invoice
+msgid "Invoice"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_aeat_sii_payment_mode_key___last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_aeat_sii_payment_mode_key_write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_aeat_sii_payment_mode_key_write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_aeat_sii_payment_mode_key_name
+msgid "Name"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: code:addons/l10n_es_aeat_sii_cash_basis/models/account_invoice.py:85
+#, python-format
+msgid "No payment mode declared in the journal items to reconcile"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:aeat.sii.payment.mode.key,name:l10n_es_aeat_sii_cash_basis.aeat_sii_payment_mode_key_03
+msgid "No se cobra / paga (fecha límite de devengo / devengo forzoso en concurso de acreedores)"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:aeat.sii.payment.mode.key,name:l10n_es_aeat_sii_cash_basis.aeat_sii_payment_mode_key_04
+msgid "Otros medios de cobro / pago"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model,name:l10n_es_aeat_sii_cash_basis.model_account_partial_reconcile
+msgid "Partial Reconcile"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model,name:l10n_es_aeat_sii_cash_basis.model_account_payment_method
+msgid "Payment Methods"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model,name:l10n_es_aeat_sii_cash_basis.model_account_payment_mode
+msgid "Payment Modes"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_account_invoice_sii_cash_basis_csv
+msgid "SII cash basis payment CSV"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_account_invoice_sii_cash_basis_return
+msgid "SII cash basis payment return"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_account_invoice_sii_cash_basis_send_error
+msgid "SII cash basis payment send error"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_account_invoice_sii_cash_basis_sent
+msgid "SII cash basis payment sent"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.ui.view,arch_db:l10n_es_aeat_sii_cash_basis.view_account_invoice_sii_filter
+msgid "SII payment error"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_account_payment_method_sii_payment_mode_id
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_cash_basis.field_account_payment_mode_sii_payment_mode_id
+msgid "SII payment mode"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:aeat.sii.payment.mode.key,name:l10n_es_aeat_sii_cash_basis.aeat_sii_payment_mode_key_01
+msgid "Transferencia"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_cash_basis
+#: model:ir.model,name:l10n_es_aeat_sii_cash_basis.model_aeat_sii_payment_mode_key
+msgid "aeat.sii.payment.mode.key"
+msgstr ""
+
