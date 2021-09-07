@@ -1,6 +1,6 @@
 pycrypto
 six>=1.9.0
-unidecode
+unidecode==1.2.0
 unicodecsv
 xlrd
 zeep
