@@ -1,4 +1,5 @@
 # Copyright 2021 Binovo IT Human Project SL
+# Copyright 2021 Landoo Sistemas de Informacion SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import models, fields, api
 from odoo.tools import ormcache
@@ -10,6 +11,11 @@ class ResCompany(models.Model):
     tbai_aeat_certificate_id = fields.Many2one(
         comodel_name='l10n.es.aeat.certificate', string='AEAT Certificate',
         domain="[('state', '=', 'active'), ('company_id', '=', id)]", copy=False)
+    tbai_protected_data = fields.Boolean('Protected Data', default=False)
+    tbai_protected_data_txt = fields.Text(
+        "Substitution Text",
+        translate=True,
+        default='Information protected by Article 9 Regulation 679/2016')
 
     @api.onchange('tbai_enabled')
     def onchange_tbai_enabled_unset_tbai_aeat_certificate_id(self):
@@ -58,3 +64,21 @@ class ResCompany(models.Model):
             if fp_id:
                 fp_ids.append(fp_id)
         return self.env['account.fiscal.position'].browse(fp_ids)
+
+    def write(self, vals):
+        res = super().write(vals)
+        if not vals.get('tbai_enabled', False):
+            return res
+        for record in self:
+            if record.tbai_enabled:
+                journals = self.env['account.journal'].search([('type', '=', 'sale')])
+                for journal in journals:
+                    if self.env['ir.module.module'].search([
+                        ('name', '=', 'l10n_es_account_invoice_sequence'),
+                        ('state', '=', 'installed')
+                    ]) and journal.invoice_sequence_id:
+                        journal.invoice_sequence_id.suffix = ''
+                    else:
+                        journal.sequence_id.suffix = ''
+                        journal.refund_sequence = True
+        return res

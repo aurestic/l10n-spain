@@ -3,7 +3,7 @@
 
 {
     "name": "TicketBAI - API",
-    "version": "11.0.0.1.0",
+    "version": "11.0.0.7.1",
     "category": "Accounting & Finance",
     "website": "http://www.binovo.es",
     "author": "Binovo,"
@@ -29,8 +29,10 @@
     },
     "data": [
         "security/ir.model.access.csv",
+        "security/l10n_es_ticketbai_security.xml",
         "data/tax_agency_data.xml",
         "data/ticketbai_invoice.xml",
+        "data/ir_config_parameter.xml",
         "views/l10n_es_ticketbai_api_views.xml",
         "views/res_company_views.xml",
         "views/res_config_settings_views.xml",

@@ -1,11 +1,15 @@
 # Copyright 2021 Binovo IT Human Project SL
+# Copyright 2021 Landoo Sistemas de Informacion SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from datetime import datetime
+import re
 from odoo import models, fields, exceptions, _, api
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.addons.l10n_es_ticketbai_api.models.ticketbai_invoice import RefundCode, \
     RefundType, SiNoType, TicketBaiInvoiceState
 from odoo.addons.l10n_es_ticketbai_api.ticketbai.xml_schema import TicketBaiSchema
+
+INVOICE_NUMBER_RE = re.compile(r'^(.*\D)?(\d*)$')
 
 
 class AccountInvoice(models.Model):
@@ -53,6 +57,10 @@ class AccountInvoice(models.Model):
         comodel_name='tbai.vat.regime.key', string='VAT Regime 2nd Key', copy=True)
     tbai_vat_regime_key3 = fields.Many2one(
         comodel_name='tbai.vat.regime.key', string='VAT Regime 3rd Key', copy=True)
+    tbai_refund_origin_ids = fields.One2many(
+        comodel_name='tbai.invoice.refund.origin',
+        inverse_name='account_refund_invoice_id',
+        string='TicketBAI Refund Origin References')
 
     @api.multi
     @api.constrains('state')
@@ -77,13 +85,15 @@ class AccountInvoice(models.Model):
         if vals and vals.get('company_id', False):
             company = self.env['res.company'].browse(vals['company_id'])
             if company.tbai_enabled:
-                filter_refund = self._context.get('filter_refund', False)
-                invoice_type = vals.get('type', False)
+                filter_refund = self._context.get('filter_refund', False) \
+                    or self._context.get('type', False) == 'out_refund'
+                invoice_type = vals.get('type', False) \
+                    or self._context.get('type', False)
                 if filter_refund and invoice_type:
-                    if 'out_refund' == vals['type']:
-                        if 'tbai_refund_type' not in vals:
+                    if 'out_refund' == invoice_type:
+                        if not vals.get('tbai_refund_type', False):
                             vals['tbai_refund_type'] = RefundType.differences.value
-                        if 'tbai_refund_key' not in vals:
+                        if not vals.get('tbai_refund_key', False):
                             vals['tbai_refund_key'] = RefundCode.R1.value
                 if vals.get('fiscal_position_id', False):
                     fiscal_position = self.env['account.fiscal.position'].browse(
@@ -146,6 +156,38 @@ class AccountInvoice(models.Model):
                 }
 
     def tbai_prepare_invoice_values(self):
+
+        def tbai_prepare_refund_values():
+            refunded_inv = self.refund_invoice_id
+            if refunded_inv:
+                vals.update({
+                    'is_invoice_refund': True,
+                    'refund_code': self.tbai_refund_key,
+                    'refund_type': self.tbai_refund_type,
+                    'tbai_invoice_refund_ids': [(0, 0, {
+                        'number_prefix': refunded_inv.tbai_get_value_serie_factura(),
+                        'number': refunded_inv.tbai_get_value_num_factura(),
+                        'expedition_date':
+                            refunded_inv.tbai_get_value_fecha_expedicion_factura()
+                    })]
+                })
+            else:
+                if self.tbai_refund_origin_ids:
+                    refund_id_dicts = []
+                    for refund_origin_id in self.tbai_refund_origin_ids:
+                        refund_id_dicts.append(
+                            (0, 0, {
+                                'number_prefix': refund_origin_id.number_prefix,
+                                'number': refund_origin_id.number,
+                                'expedition_date': refund_origin_id.expedition_date
+                            }))
+                    vals.update({
+                        'is_invoice_refund': True,
+                        'refund_code': self.tbai_refund_key,
+                        'refund_type': self.tbai_refund_type,
+                        'tbai_invoice_refund_ids': refund_id_dicts
+                    })
+
         self.ensure_one()
         partner = self.partner_id
         vals = {
@@ -180,30 +222,24 @@ class AccountInvoice(models.Model):
             vals['tax_retention_amount_total'] = retencion_soportada
         if self.tbai_is_invoice_refund() and \
                 RefundType.differences.value == self.tbai_refund_type:
-            # You may inherit this method to support substitution credit notes (refunds)
-            refunded_invoice = self.refund_invoice_id
-            vals.update({
-                'is_invoice_refund': True,
-                'refund_code': self.tbai_refund_key,
-                'refund_type': self.tbai_refund_type,
-                'tbai_invoice_refund_ids': [(0, 0, {
-                    'number_prefix': refunded_invoice.tbai_get_value_serie_factura(),
-                    'number': refunded_invoice.tbai_get_value_num_factura(),
-                    'expedition_date':
-                        refunded_invoice.tbai_get_value_fecha_expedicion_factura()
-                })]
-            })
+            tbai_prepare_refund_values()
         operation_date = self.tbai_get_value_fecha_operacion()
         if operation_date:
             vals['operation_date'] = operation_date
         gipuzkoa_tax_agency = self.env.ref(
             "l10n_es_ticketbai_api.tbai_tax_agency_gipuzkoa")
+        araba_tax_agency = self.env.ref(
+            "l10n_es_ticketbai_api.tbai_tax_agency_araba")
         tax_agency = self.company_id.tbai_tax_agency_id
-        if tax_agency == gipuzkoa_tax_agency:
+        if tax_agency in (gipuzkoa_tax_agency, araba_tax_agency):
             lines = []
             for line in self.invoice_line_ids:
+                description_line = line.name[:250]
+                if self.company_id.tbai_protected_data \
+                   and self.company_id.tbai_protected_data_txt:
+                    description_line = self.company_id.tbai_protected_data_txt[:250]
                 lines.append((0, 0, {
-                    'description': line.name[:250],
+                    'description': description_line,
                     'quantity': line.tbai_get_value_cantidad(),
                     'price_unit': "%.8f" % line.price_unit,
                     'discount_amount': line.tbai_get_value_descuento(),
@@ -299,6 +335,32 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def invoice_validate(self):
+
+        def validate_refund_invoices():
+            for invoice in refund_invoices:
+                valid_refund = True
+                error_refund_msg = None
+                if not invoice.refund_invoice_id and not invoice.tbai_refund_origin_ids:
+                    valid_refund = False
+                    error_refund_msg = _("Please, specify data for the original"
+                                         " invoices that are going to be refunded")
+                if invoice.refund_invoice_id.tbai_invoice_id:
+                    valid_refund = invoice.refund_invoice_id.tbai_invoice_id.state in \
+                        [
+                            TicketBaiInvoiceState.pending.value,
+                            TicketBaiInvoiceState.sent.value
+                        ]
+                    if not valid_refund:
+                        error_refund_msg = _(
+                            "Some of the original invoices have related tbai invoices "
+                            "in inconsistent state please fix them beforehand.")
+                if valid_refund and invoice.refund_invoice_id.tbai_cancellation_id:
+                    valid_refund = False
+                    error_refund_msg = _("Some of the original invoices "
+                                         "have related tbai cancelled invoices")
+                if not valid_refund:
+                    raise exceptions.ValidationError(error_refund_msg)
+
         res = super().invoice_validate()
         # Credit Notes:
         # A. refund: creates a draft credit note, not validated from wizard.
@@ -307,17 +369,15 @@ class AccountInvoice(models.Model):
         #  * The draft invoice won't be a credit note 'by substitution',
         #  but a normal customer invoice.
         # There is no 'by substitution' credit note, only 'by differences'.
-        tbai_invoices = self.sudo().filtered(
-            lambda x: x.tbai_enabled and (
-                'out_invoice' == x.type or
-                (
-                    x.refund_invoice_id and 'out_refund' == x.type and
-                    x.tbai_refund_type == RefundType.differences.value and
-                    x.refund_invoice_id.tbai_invoice_id and not
-                    x.refund_invoice_id.tbai_cancellation_id
-                )
-            )
-        )
+        tbai_invoices = self.sudo().env['account.invoice']
+        tbai_invoices |= self.sudo().filtered(
+            lambda x: x.tbai_enabled and 'out_invoice' == x.type)
+        refund_invoices = self.sudo().filtered(
+            lambda x: x.tbai_enabled and 'out_refund' == x.type and
+            x.tbai_refund_type == RefundType.differences.value)
+
+        validate_refund_invoices()
+        tbai_invoices |= refund_invoices
         tbai_invoices._tbai_build_invoice()
         return res
 
@@ -345,20 +405,15 @@ class AccountInvoice(models.Model):
             res = False
         return res
 
+    def split_invoice_number(self):
+        m = re.match(INVOICE_NUMBER_RE, self.number)
+        return m.group(1), m.group(2)
+
     def tbai_get_value_serie_factura(self):
-        sequence = self.journal_id.invoice_sequence_id
-        date = self.date or self.date_invoice
-        prefix, suffix = sequence.with_context(
-            ir_sequence_date=date, ir_sequence_date_range=date)._get_prefix_suffix()
-        return prefix
+        return self.split_invoice_number()[0]
 
     def tbai_get_value_num_factura(self):
-        invoice_number_prefix = self.tbai_get_value_serie_factura()
-        if invoice_number_prefix and not self.number.startswith(invoice_number_prefix):
-            raise exceptions.ValidationError(_(
-                "Invoice Number Prefix %s is not part of Invoice Number %s!"
-            ) % (invoice_number_prefix, self.number))
-        return self.number[len(invoice_number_prefix):]
+        return self.split_invoice_number()[1]
 
     def tbai_get_value_fecha_expedicion_factura(self):
         invoice_date = self.date or self.date_invoice

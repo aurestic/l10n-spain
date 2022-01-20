@@ -421,7 +421,7 @@ class TicketBAIInvoice(models.Model):
                     border=0, error_correction=qrcode.constants.ERROR_CORRECT_M)
                 qr.add_data(record.qr_url)
                 qr.make()
-                img = qr.make_image(fill_color="white", back_color="black")
+                img = qr.make_image()
                 with io.BytesIO() as temp:
                     img.save(temp, format="PNG")
                     record.qr = base64.b64encode(temp.getvalue())
@@ -545,6 +545,19 @@ class TicketBAIInvoice(models.Model):
 
     @api.model
     def send_pending_invoices(self):
+        try:
+            self.send_pending_invoices_impl()
+        except Exception as e:
+            _logger.warning('Exception sending invoices:', exc_info=e)
+
+    @api.model
+    def send_pending_invoices_impl(self):
+        Parameter = self.env['ir.config_parameter']
+        config_ddbb = Parameter.sudo().get_param('database.ticketbai')
+        ticketbai_ddbb = self.env.cr.dbname
+        if config_ddbb != ticketbai_ddbb:
+            _logger.info(_("The ticketbai database is not active for sending invoices"))
+            return
         next_pending_invoice = self.get_next_pending_invoice()
         retry_later = False
         rejected_retries = 0
@@ -598,10 +611,6 @@ class TicketBAIInvoice(models.Model):
                 retry_later = True
             if not retry_later:
                 next_pending_invoice = self.get_next_pending_invoice()
-            # If an Invoice has been sent successfully to the Tax Agency
-            # we need to make sure that the current state is saved in case an exception
-            # occurs in the following invoices.
-            self.env.cr.commit()
 
     def _get_tbai_identifier_values(self):
         """ V 1.2
@@ -661,7 +670,8 @@ class TicketBAIInvoice(models.Model):
     def get_tbai_xml_signed_and_signature_value(self):
         root = self.get_tbai_xml_unsigned()
         p12 = self.company_id.tbai_certificate_get_p12()
-        signature_value = XMLSchema.sign(root, p12)
+        tax_agency = self.company_id.tbai_tax_agency_id
+        signature_value = XMLSchema.sign(root, p12, tax_agency)
         return root, signature_value
 
     def build_tbai_invoice(self):
@@ -752,6 +762,8 @@ class TicketBAIInvoice(models.Model):
         """Support only for one customer."""
         gipuzkoa_tax_agency = self.env.ref(
             "l10n_es_ticketbai_api.tbai_tax_agency_gipuzkoa")
+        araba_tax_agency = self.env.ref(
+            "l10n_es_ticketbai_api.tbai_tax_agency_araba")
         tax_agency = self.company_id.tbai_tax_agency_id
         res = []
         if 100 < len(self.tbai_customer_ids):
@@ -772,14 +784,14 @@ class TicketBAIInvoice(models.Model):
             customer_res["ApellidosNombreRazonSocial"] = customer.name
             if customer.zip:
                 customer_res["CodigoPostal"] = customer.zip
-            elif tax_agency == gipuzkoa_tax_agency:
+            elif tax_agency in (gipuzkoa_tax_agency, araba_tax_agency):
                 raise exceptions.ValidationError(_(
                     "TicketBAI Invoice %s:\n"
                     "ZIP code for %s is required for the Tax Agency %s!"
                 ) % (self.name, customer.name, tax_agency.name))
             if customer.address:
                 customer_res["Direccion"] = customer.address
-            elif tax_agency == gipuzkoa_tax_agency:
+            elif tax_agency in (gipuzkoa_tax_agency, araba_tax_agency):
                 raise exceptions.ValidationError(_(
                     "TicketBAI Invoice %s:\n"
                     "Address for %s is required for the Tax Agency %s!"
@@ -904,8 +916,10 @@ class TicketBAIInvoice(models.Model):
     def build_detalles_factura(self):
         gipuzkoa_tax_agency = self.env.ref(
             "l10n_es_ticketbai_api.tbai_tax_agency_gipuzkoa")
+        araba_tax_agency = self.env.ref(
+            "l10n_es_ticketbai_api.tbai_tax_agency_araba")
         tax_agency = self.company_id.tbai_tax_agency_id
-        if tax_agency == gipuzkoa_tax_agency:
+        if tax_agency in (gipuzkoa_tax_agency, araba_tax_agency):
             id_detalle_factura = self.build_id_detalle_factura()
             if id_detalle_factura:
                 res = {"IDDetalleFactura": id_detalle_factura}
@@ -1001,7 +1015,9 @@ class TicketBAIInvoice(models.Model):
         return res
 
     def build_facturas_rectificadas_sustituidas(self):
-        if self.is_invoice_refund:
+        res = {}
+        if self.is_invoice_refund or \
+                SiNoType.S.value == self.substitutes_simplified_invoice:
             refunds_values = []
             for refund in self.tbai_invoice_refund_ids:
                 vals = OrderedDict()
@@ -1012,8 +1028,6 @@ class TicketBAIInvoice(models.Model):
                 vals["FechaExpedicionFactura"] = refund.expedition_date
                 refunds_values.append(vals)
             res = {"IDFacturaRectificadaSustituida": refunds_values}
-        else:
-            res = {}
         return res
 
     def build_huella_tbai(self):
