@@ -31,7 +31,7 @@ class AeatModMapTaxCode(models.Model):
     @api.one
     @api.constrains('date_from', 'date_to')
     def _unique_date_range(self):
-        domain = [('id', '!=', self.id)]
+        domain = [('id', '!=', self.id), ('model', '=', self.model)]
         if self.date_from and self.date_to:
             domain += ['|', '&',
                        ('date_from', '<=', self.date_to),

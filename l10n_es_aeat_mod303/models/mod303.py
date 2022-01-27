@@ -283,9 +283,33 @@ class L10nEsAeatMod303Report(models.Model):
         string=u"[88] Total volumen operaciones",
         compute='_compute_casilla_88',
         help=u"Información adicional - Operaciones realizadas en el ejercicio"
-             u" - Total volumen de operaciones ([80]+[81]+[93]+[94]+[83]+[84]+"
-             u"[85]+[86]+[95]+[96]+[97]+[98]-[79]-[99])",
+             u" - Total volumen de operaciones ([80]+[81]+[93]+[94]+[83]+[84]"
+             u"+[125]+[126]+[127]+[128]+[86]+[95]+[96]+[97]+[98]-[79]-[99])",
         store=True)
+    marca_sepa = fields.Selection(
+        selection=[
+            ("0", "0 Vacía"),
+            ("1", "1 Cuenta España"),
+            ("2", "2 Unión Europea SEPA"),
+            ("3", "3 Resto Países"),
+        ],
+        compute='_compute_marca_sepa')
+
+    @api.depends("partner_bank_id", "result_type")
+    def _compute_marca_sepa(self):
+        for record in self:
+            if record.result_type != 'D':
+                record.marca_sepa = '0'
+            elif record.partner_bank_id.bank.country == \
+                    self.env.ref("base.es"):
+                record.marca_sepa = "1"
+            elif record.partner_bank_id.bank.country in \
+                    self.env.ref("base.europe").country_ids:
+                record.marca_sepa = "2"
+            elif record.partner_bank_id.bank.country:
+                record.marca_sepa = "3"
+            else:
+                record.marca_sepa = "0"
 
     def __init__(self, pool, cr):
         self._aeat_number = '303'
@@ -296,7 +320,8 @@ class L10nEsAeatMod303Report(models.Model):
         for report in self:
             report.casilla_88 = sum(
                 report.tax_lines.filtered(lambda x: x.field_number in (
-                    80, 81, 83, 84, 85, 86, 93, 94, 95, 96, 97, 98,
+                    80, 81, 83, 84, 85, 86, 93, 94, 95, 96, 97, 98, 125, 126,
+                    127, 128
                 )).mapped('amount')
             ) - sum(
                 report.tax_lines.filtered(lambda x: x.field_number in (
@@ -369,7 +394,8 @@ class L10nEsAeatMod303Report(models.Model):
         """Don't populate results for fields 79-99 for reports different from
         last of the year one or when not exonerated of presenting model 390.
         """
-        if 79 <= self.env.context.get('field_number', 0) <= 99:
+        if 79 <= self.env.context.get('field_number', 0) <= 99 or \
+                self.env.context.get('field_number', 0) == 125:
             if (self.exonerated_390 == '2' or not self.has_operation_volume
                     or self.period_type not in ('4T', '12')):
                 return self.env['account.move.line']
@@ -385,7 +411,8 @@ class L10nEsAeatMod303Report(models.Model):
         the complete check for not bringing results is done on
         `_get_tax_code_lines`.
         """
-        if 79 <= self.env.context.get('field_number', 0) <= 99:
+        if 79 <= self.env.context.get('field_number', 0) <= 99 or \
+                self.env.context.get('field_number', 0) == 125:
             fiscalyear_code = fields.Date.from_string(
                 periods[:1].date_stop
             ).year

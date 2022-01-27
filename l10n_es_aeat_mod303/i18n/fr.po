@@ -34,6 +34,11 @@ msgid "0 - Sin epígrafe"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
+#: selection:l10n.es.aeat.mod303.report,marca_sepa:0
+msgid "0 Vacía"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
 #: model:l10n.es.aeat.mod303.report.activity.code,name:l10n_es_aeat_mod303.aeat_mod303_activity_code_4t_1b
 msgid "1 - Epígrafes correspondientes a: Actividades AGP con IAE"
 msgstr ""
@@ -52,6 +57,11 @@ msgid ""
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
+#: selection:l10n.es.aeat.mod303.report,marca_sepa:0
+msgid "1 Cuenta España"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
 #: model:l10n.es.aeat.mod303.report.activity.code,name:l10n_es_aeat_mod303.aeat_mod303_activity_code_12_2b
 msgid "2 - Epígrafes correspondientes a: Actividades artísticas sujetas al IAE"
 msgstr ""
@@ -60,6 +70,11 @@ msgstr ""
 #: model:l10n.es.aeat.mod303.report.activity.code,name:l10n_es_aeat_mod303.aeat_mod303_activity_code_12_2a
 msgid ""
 "2 - Epígrafes correspondientes a: Actividades profesionales sujetas al IAE"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
+#: selection:l10n.es.aeat.mod303.report,marca_sepa:0
+msgid "2 Unión Europea SEPA"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
@@ -77,6 +92,11 @@ msgstr ""
 #. module: l10n_es_aeat_mod303
 #: model:l10n.es.aeat.mod303.report.activity.code,name:l10n_es_aeat_mod303.aeat_mod303_activity_code_12_3c
 msgid "3 - Epígrafe 862 correspondiente a: Alquiler de inmuebles rústicos"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
+#: selection:l10n.es.aeat.mod303.report,marca_sepa:0
+msgid "3 Resto Países"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
@@ -239,13 +259,6 @@ msgid "Created on"
 msgstr "Date"
 
 #. module: l10n_es_aeat_mod303
-#: help:l10n.es.aeat.mod303.report,cuota_compensar:0
-msgid ""
-"Cuota a compensar de periodos anteriores, en los que su declaración fue a "
-"devolver y se escogió la opción de compensación posterior"
-msgstr ""
-
-#. module: l10n_es_aeat_mod303
 #: field:l10n.es.aeat.mod303.report,currency_id:0
 msgid "Currency"
 msgstr "Devise"
@@ -384,6 +397,13 @@ msgid "Export config"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
+#: help:l10n.es.aeat.mod303.report,cuota_compensar:0
+msgid ""
+"Fee to compensate for prior periods, in which his statement was to return "
+"and compensation back option was chosen"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
 #: field:l10n.es.aeat.mod303.report,fiscalyear_id:0
 msgid "Fiscal year"
 msgstr "Exercice fiscal"
@@ -404,7 +424,8 @@ msgstr "ID"
 msgid ""
 "Información adicional - Operaciones realizadas en el ejercicio - Total "
 "volumen de operaciones "
-"([80]+[81]+[93]+[94]+[83]+[84]+[85]+[86]+[95]+[96]+[97]+[98]-[79]-[99])"
+"([80]+[81]+[93]+[94]+[83]+[84]+[125]+[126]+[127]+[128]+[86]+[95]+[96]+[97]+[98]-"
+"[79]-[99])"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
@@ -458,6 +479,11 @@ msgid ""
 "Navarra, consignarán en esta casilla el porcentaje del volumen de "
 "operaciones en territorio común. Los demás sujetos pasivos consignarán en "
 "esta casilla el 100%"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
+#: field:l10n.es.aeat.mod303.report,marca_sepa:0
+msgid "Marca sepa"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
@@ -587,13 +613,13 @@ msgid ""
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
-#: code:addons/l10n_es_aeat_mod303/models/mod303.py:344
+#: code:addons/l10n_es_aeat_mod303/models/mod303.py:383
 #, python-format
 msgid "Select an account for making the charge"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
-#: code:addons/l10n_es_aeat_mod303/models/mod303.py:346
+#: code:addons/l10n_es_aeat_mod303/models/mod303.py:385
 #, python-format
 msgid "Select an account for receiving the money"
 msgstr ""
@@ -654,6 +680,11 @@ msgid "VAT number"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
+#: field:l10n.es.aeat.mod303.report,potential_cuota_compensar:0
+msgid "[110] Pending fees to compensate"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
 #: field:l10n.es.aeat.mod303.report,total_devengado:0
 msgid "[27] IVA devengado"
 msgstr ""
@@ -675,12 +706,7 @@ msgstr ""
 
 #. module: l10n_es_aeat_mod303
 #: field:l10n.es.aeat.mod303.report,atribuible_estado:0
-msgid "[66] Atribuible a la Administración"
-msgstr ""
-
-#. module: l10n_es_aeat_mod303
-#: field:l10n.es.aeat.mod303.report,cuota_compensar:0
-msgid "[67] Cuotas a compensar"
+msgid "[66] Attributable to the Administration"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
@@ -706,6 +732,16 @@ msgstr ""
 #. module: l10n_es_aeat_mod303
 #: field:l10n.es.aeat.mod303.report,casilla_77:0
 msgid "[77] Iva Diferido (Liquidado por aduana)"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
+#: field:l10n.es.aeat.mod303.report,cuota_compensar:0
+msgid "[78] Applied fees to compensate (old [67])"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
+#: field:l10n.es.aeat.mod303.report,remaining_cuota_compensar:0
+msgid "[87] Remaining fees to compensate"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
