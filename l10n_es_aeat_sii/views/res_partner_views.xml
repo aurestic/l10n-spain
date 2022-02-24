@@ -10,7 +10,6 @@
             <div name="vat_info" position="after">
                 <field name="sii_enabled" invisible="1"/>
                 <field name="sii_simplified_invoice"
-                       attrs="{'invisible': [('sii_enabled', '=', False)]}"
                 />
             </div>
         </field>
