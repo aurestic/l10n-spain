@@ -34,7 +34,7 @@ msgid "Chapter"
 msgstr ""
 
 #. module: l10n_es_ticketbai_batuz
-#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:648
+#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:659
 #, python-format
 msgid "Chapter and type are required for search a pending LROE Operation"
 msgstr ""
@@ -107,13 +107,13 @@ msgid "LROE API URL"
 msgstr ""
 
 #. module: l10n_es_ticketbai_batuz
-#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:713
+#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:724
 #, python-format
 msgid "LROE Build: method for model %s chapter %s not implemented!"
 msgstr ""
 
 #. module: l10n_es_ticketbai_batuz
-#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:694
+#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:705
 #, python-format
 msgid "LROE Build: operation type is necessary!"
 msgstr ""
@@ -210,6 +210,11 @@ msgstr ""
 #. module: l10n_es_ticketbai_batuz
 #: selection:account.invoice,lroe_state:0
 msgid "Recorded with warnings"
+msgstr ""
+
+#. module: l10n_es_ticketbai_batuz
+#: model:ir.ui.view,arch_db:l10n_es_ticketbai_batuz.invoice_supplier_form_inherit_l10n_es_ticketbai_batuz
+msgid "Refund"
 msgstr ""
 
 #. module: l10n_es_ticketbai_batuz
@@ -323,14 +328,14 @@ msgid "VAT Regimes Purchase"
 msgstr ""
 
 #. module: l10n_es_ticketbai_batuz
-#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:699
+#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:710
 #, python-format
 msgid "You can not communicate this invoice at this moment because there is a job running!"
 msgstr ""
 
 #. module: l10n_es_ticketbai_batuz
-#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:791
-#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:824
+#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:802
+#: code:addons/l10n_es_ticketbai_batuz/models/account_invoice.py:836
 #, python-format
 msgid "You can not set to draft this invoice because there is a job running!"
 msgstr ""

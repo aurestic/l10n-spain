@@ -5,7 +5,7 @@
     "name": "TicketBAI - "
             "declaración de todas las operaciones de venta realizadas por las personas "
             "y entidades que desarrollan actividades económicas",
-    "version": "11.0.1.0.0",
+    "version": "11.0.1.4.0",
     "category": "Accounting & Finance",
     "website": "http://www.binovo.es",
     "author": "Binovo,"
@@ -40,6 +40,7 @@
         "views/account_fiscal_position_template_views.xml",
         "views/account_fiscal_position_views.xml",
         "views/account_invoice_views.xml",
+        "views/account_journal_views.xml",
         "views/ir_sequence_views.xml",
         "views/report_invoice.xml",
         "views/res_company_views.xml",

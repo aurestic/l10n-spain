@@ -66,7 +66,8 @@ class AccountInvoice(models.Model):
     @api.constrains('state')
     def _check_cancel_number_invoice(self):
         for record in self:
-            if record.tbai_enabled and 'draft' == record.state and record.number:
+            if record.type in ('out_invoice', 'out_refund') and \
+                    record.tbai_enabled and 'draft' == record.state and record.number:
                 raise exceptions.ValidationError(_(
                     "Invoice %s. You cannot change to draft a numbered invoice!"
                 ) % record.number)
@@ -82,28 +83,30 @@ class AccountInvoice(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals and vals.get('company_id', False):
+        if vals.get('company_id', False):
             company = self.env['res.company'].browse(vals['company_id'])
-            if company.tbai_enabled:
-                filter_refund = self._context.get('filter_refund', False) \
-                    or self._context.get('type', False) == 'out_refund'
-                invoice_type = vals.get('type', False) \
-                    or self._context.get('type', False)
-                if filter_refund and invoice_type:
-                    if 'out_refund' == invoice_type:
-                        if not vals.get('tbai_refund_type', False):
-                            vals['tbai_refund_type'] = RefundType.differences.value
-                        if not vals.get('tbai_refund_key', False):
-                            vals['tbai_refund_key'] = RefundCode.R1.value
-                if vals.get('fiscal_position_id', False):
-                    fiscal_position = self.env['account.fiscal.position'].browse(
-                        vals['fiscal_position_id'])
-                    vals['tbai_vat_regime_key'] = \
-                        fiscal_position.tbai_vat_regime_key.id
-                    vals['tbai_vat_regime_key2'] = \
-                        fiscal_position.tbai_vat_regime_key2.id
-                    vals['tbai_vat_regime_key3'] = \
-                        fiscal_position.tbai_vat_regime_key3.id
+        else:
+            company = self.env.user.company_id
+        if company.tbai_enabled:
+            filter_refund = self._context.get('filter_refund', False) \
+                or self._context.get('type', False) == 'out_refund'
+            invoice_type = vals.get('type', False) \
+                or self._context.get('type', False)
+            if filter_refund and invoice_type:
+                if 'out_refund' == invoice_type:
+                    if not vals.get('tbai_refund_type', False):
+                        vals['tbai_refund_type'] = RefundType.differences.value
+                    if not vals.get('tbai_refund_key', False):
+                        vals['tbai_refund_key'] = RefundCode.R1.value
+            if vals.get('fiscal_position_id', False):
+                fiscal_position = self.env['account.fiscal.position'].browse(
+                    vals['fiscal_position_id'])
+                vals['tbai_vat_regime_key'] = \
+                    fiscal_position.tbai_vat_regime_key.id
+                vals['tbai_vat_regime_key2'] = \
+                    fiscal_position.tbai_vat_regime_key2.id
+                vals['tbai_vat_regime_key3'] = \
+                    fiscal_position.tbai_vat_regime_key3.id
         return super().create(vals)
 
     @api.depends(
@@ -154,6 +157,14 @@ class AccountInvoice(models.Model):
                             "Customer Credit Notes.")
                     }
                 }
+
+    @api.onchange('refund_invoice_id')
+    def onchange_tbai_refund_invoice_id(self):
+        if self.refund_invoice_id:
+            if not self.tbai_refund_type:
+                self.tbai_refund_type = RefundType.differences.value
+            if not self.tbai_refund_key:
+                self.tbai_refund_key = RefundCode.R1.value
 
     def tbai_prepare_invoice_values(self):
 
@@ -371,10 +382,16 @@ class AccountInvoice(models.Model):
         # There is no 'by substitution' credit note, only 'by differences'.
         tbai_invoices = self.sudo().env['account.invoice']
         tbai_invoices |= self.sudo().filtered(
-            lambda x: x.tbai_enabled and 'out_invoice' == x.type)
-        refund_invoices = self.sudo().filtered(
-            lambda x: x.tbai_enabled and 'out_refund' == x.type and
-            x.tbai_refund_type == RefundType.differences.value)
+            lambda x:
+            x.tbai_enabled and 'out_invoice' == x.type and
+            x.date and x.date >= x.journal_id.tbai_active_date)
+        refund_invoices = \
+            self.sudo().filtered(
+                lambda x:
+                x.tbai_enabled and 'out_refund' == x.type and
+                not x.tbai_refund_type or
+                x.tbai_refund_type == RefundType.differences.value and
+                x.date and x.date >= x.journal_id.tbai_active_date)
 
         validate_refund_invoices()
         tbai_invoices |= refund_invoices
@@ -465,7 +482,13 @@ class AccountInvoice(models.Model):
         taxes = self.tax_line_ids.filtered(
             lambda tax: tax.tax_id in irpf_taxes)
         if 0 < len(taxes):
-            res = "%.2f" % sum([tax.tbai_get_amount_total_company() for tax in taxes])
+            if RefundType.differences.value == self.tbai_refund_type:
+                sign = 1
+            else:
+                sign = -1
+            amount_total = sum(
+                [tax.tbai_get_amount_total_company() for tax in taxes])
+            res = "%.2f" % (sign * amount_total)
         else:
             res = None
         return res
@@ -483,14 +506,32 @@ class AccountInvoiceLine(models.Model):
 
     def tbai_get_value_descuento(self):
         if self.discount:
-            res = "%.2f" % (self.quantity * self.price_unit * self.discount / 100.0)
+            if RefundType.differences.value == self.invoice_id.tbai_refund_type:
+                sign = -1
+            else:
+                sign = 1
+            res = \
+                "%.2f" \
+                % \
+                (sign * self.quantity * self.price_unit *
+                 self.discount / 100.0)
         else:
             res = '0.00'
         return res
 
     def tbai_get_value_importe_total(self):
+        tbai_maps = self.env["tbai.tax.map"].search([('code', '=', "IRPF")])
+        irpf_taxes = self.env['l10n.es.aeat.report'].get_taxes_from_templates(
+            tbai_maps.mapped("tax_template_ids")
+        )
+        currency = self.invoice_id and self.invoice_id.currency_id or None
+        price = self.price_unit * (1 - (self.discount or 0.0) / 100.0)
+        taxes = (self.invoice_line_tax_ids - irpf_taxes).compute_all(
+            price, currency, self.quantity, product=self.product_id,
+            partner=self.invoice_id.partner_id)
+        price_total = taxes['total_included'] if taxes else self.price_subtotal
         if RefundType.differences.value == self.invoice_id.tbai_refund_type:
             sign = -1
         else:
             sign = 1
-        return "%.2f" % (sign * self.price_total)
+        return "%.2f" % (sign * price_total)

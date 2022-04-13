@@ -326,7 +326,7 @@ class AccountInvoice(models.Model):
                     OrderedDict([
                         ("BaseRectificada", abs(origin.amount_untaxed_signed)),
                         ("CuotaRectificada", abs(
-                            origin.amount_total_company_signed -
+                            origin._get_amount_company_currency(origin.amount_total) -
                             origin.amount_untaxed_signed
                         )),
                         # (CuotaRecargoRectificada, False),
@@ -400,12 +400,13 @@ class AccountInvoice(models.Model):
         return self.tax_line_ids.filtered(lambda x: x.tax_id == re_tax)
 
     @api.model
-    def _get_lroe_tax_dict(self, tax_line, sign):
+    def _get_lroe_tax_dict(self, tax_line, sign, deductible=True):
         """Get the LROE tax dictionary for the passed tax line.
         :param self: Single invoice record.
         :param tax_line: Tax line that is being analyzed.
         :param sign: Sign of the operation (only refund by differences is
           negative).
+        :param deductible: is deductible or not
         :return: A dictionary with the corresponding LROE tax values.
         """
         tax = tax_line.tax_id
@@ -425,7 +426,7 @@ class AccountInvoice(models.Model):
                     ("BaseImponible", sign * base),
                     ("TipoImpositivo", str(tax_type)),
                     ("CuotaIVASoportada", sign * cuota),
-                    # TODO: CuotaIVADeducible
+                    ("CuotaIVADeducible", (sign * cuota) * int(deductible)),
                 ]
             )
         else:
@@ -440,7 +441,7 @@ class AccountInvoice(models.Model):
                     ("BaseImponible", sign * base),
                     ("TipoImpositivo", str(tax_type)),
                     ("CuotaIVASoportada", sign * cuota),
-                    # TODO: CuotaIVADeducible
+                    ("CuotaIVADeducible", (sign * cuota) * int(deductible)),
                     # TODO: 140 - ImporteGastoIRPF
                     # TODO: 140 - CriterioCobrosYPagos
                 ]
@@ -483,7 +484,10 @@ class AccountInvoice(models.Model):
         not_in_amount_total = 0.0
         for tax_line in self.tax_line_ids:
             tax = tax_line.tax_id
-            tax_dict = self._get_lroe_tax_dict(tax_line, sign)
+            deductible = False
+            if tax in taxes_frisp + taxes_frs + taxes_frbc + taxes_frbi:
+                deductible = True
+            tax_dict = self._get_lroe_tax_dict(tax_line, sign, deductible)
             if tax in taxes_not_in_total:
                 amount = self._get_amount_company_currency(tax_line.amount_total)
                 not_in_amount_total += amount
@@ -518,6 +522,7 @@ class AccountInvoice(models.Model):
             if tax in taxes_frns:
                 tax_dict.pop("TipoImpositivo")
                 tax_dict.pop("CuotaIVASoportada")
+                tax_dict.pop("CuotaIVADeducible")
             elif tax in taxes_frsa:
                 if "02" in self._get_lroe_purchase_key_codes():
                     tax_dict["PorcentajeCompensacionREAGYP"] = tax_dict.pop(
@@ -526,6 +531,9 @@ class AccountInvoice(models.Model):
                     tax_dict["ImporteCompensacionREAGYP"] = tax_dict.pop(
                         "CuotaIVASoportada"
                     )
+            if "13" in self._get_lroe_purchase_key_codes():
+                # Eliminamos la clave CuotaIVADeducible en importaciones
+                tax_dict.pop("CuotaIVADeducible")
             if lroe_model == "240":
                 taxes_dict["IVA"]["DetalleIVA"].append(tax_dict)
             elif lroe_model == "140":
@@ -538,7 +546,8 @@ class AccountInvoice(models.Model):
         res = OrderedDict([
             ("DescripcionOperacion", self._get_batuz_description()[:250]),
             ("Claves", self._get_lroe_claves()),
-            ("ImporteTotalFactura", amount_total or self.amount_total_company_signed),
+            ("ImporteTotalFactura",
+             amount_total or self._get_amount_company_currency(self.amount_total)),
             # Base imponible a coste (para grupos de IVA – nivel avanzado (240))
             # ("BaseImponibleACoste", False),
         ])
@@ -573,7 +582,8 @@ class AccountInvoice(models.Model):
             sign = self._get_lroe_sign()
             taxes_dict, tax_amount, not_in_amount_total = self._get_lroe_in_taxes(sign)
             amount_total = (
-                abs(self.amount_total_company_signed) - not_in_amount_total
+                abs(self._get_amount_company_currency(self.amount_total))
+                - not_in_amount_total
             ) * sign
             inv_dict = OrderedDict([
                 ("Gasto", OrderedDict([
@@ -616,7 +626,8 @@ class AccountInvoice(models.Model):
             sign = self._get_lroe_sign()
             taxes_dict, tax_amount, not_in_amount_total = self._get_lroe_in_taxes(sign)
             amount_total = (
-                abs(self.amount_total_company_signed) - not_in_amount_total
+                abs(self._get_amount_company_currency(self.amount_total))
+                - not_in_amount_total
             ) * sign
             inv_dict = OrderedDict([
                 ("FacturaRecibida", OrderedDict([
@@ -796,6 +807,7 @@ class AccountInvoice(models.Model):
         res = super().action_cancel()
         lroe_invoices = self.sudo().filtered(
             lambda x: x.tbai_enabled
+            and x.date and x.date >= x.journal_id.tbai_active_date
             and x.lroe_state not in ("error")
             and (
                 x.type == "in_invoice"
@@ -833,6 +845,7 @@ class AccountInvoice(models.Model):
         res = super(AccountInvoice, self).invoice_validate()
         lroe_invoices = self.sudo().filtered(
             lambda x: x.tbai_enabled
+            and x.date and x.date >= x.journal_id.tbai_active_date
             and (
                 x.type == "in_invoice"
                 or (

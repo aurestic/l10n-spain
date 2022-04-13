@@ -204,17 +204,21 @@ class LROEOperation(models.Model):
 
     def _get_printed_report_name(self):
         self.ensure_one()
-        report_name = None
+        report_name = self.model + '_' + self.type + '_' + str(self.id)
         if self.model == LROEModelEnum.model_pj_240.value:
             if self.type == LROEOperationEnum.create.value:
                 report_name = _('LROE_model_pj_240_create') + '_' + str(self.id)
             elif self.type == LROEOperationEnum.cancel.value:
                 report_name = _('LROE_model_pj_240_cancel') + '_' + str(self.id)
+            elif self.type == LROEOperationEnum.update.value:
+                report_name = _('LROE_model_pj_240_update') + '_' + str(self.id)
         elif self.model == LROEModelEnum.model_pf_140.value:
             if self.type == LROEOperationEnum.create.value:
                 report_name = _('LROE_model_pf_140_create') + '_' + str(self.id)
             elif self.type == LROEOperationEnum.cancel.value:
                 report_name = _('LROE_model_pf_140_cancel') + '_' + str(self.id)
+            elif self.type == LROEOperationEnum.update.value:
+                report_name = _('LROE_model_pf_140_update') + '_' + str(self.id)
         return report_name
 
     @api.multi
@@ -282,9 +286,9 @@ class LROEOperation(models.Model):
                 return str(datetime.strptime(
                     self.tbai_invoice_ids[0].expedition_date,
                     '%d-%m-%Y').year)
-        elif self.invoice_ids and self.invoice_ids[0].date_invoice:
-            date_invoice = fields.Date.from_string(self.invoice_ids[0].date_invoice)
-            return str(date_invoice.year)
+        elif self.invoice_ids and self.invoice_ids[0].date:
+            date = fields.Date.from_string(self.invoice_ids[0].date)
+            return str(date.year)
         return str(datetime.now().year)
 
     def build_obligado_tributario(self):
