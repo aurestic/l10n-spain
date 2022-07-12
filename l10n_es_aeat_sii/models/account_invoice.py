@@ -1145,18 +1145,23 @@ class AccountInvoice(models.Model):
                         unicode(res_line['DescripcionErrorRegistro'])[:60])
                 inv_vals['sii_send_error'] = send_error
                 invoice.write(inv_vals)
+                self.env.cr.commit()
             except Exception as fault:
-                new_cr = RegistryManager.get(self.env.cr.dbname).cursor()
-                env = api.Environment(new_cr, self.env.uid, self.env.context)
-                invoice = env['account.invoice'].browse(self.id)
-                inv_vals.update({
-                    'sii_send_failed': True,
-                    'sii_send_error': ustr(fault),
-                    'sii_return': ustr(fault),
-                })
-                invoice.write(inv_vals)
-                new_cr.commit()
-                new_cr.close()
+                if hasattr(fault, 'message') and fault.message.strip() == \
+                        "no se pudo serializar el acceso debido a un update concurrente":
+                    pass
+                else:
+                    new_cr = RegistryManager.get(self.env.cr.dbname).cursor()
+                    env = api.Environment(new_cr, self.env.uid, self.env.context)
+                    invoice = env['account.invoice'].browse(self.id)
+                    inv_vals.update({
+                        'sii_send_failed': True,
+                        'sii_send_error': ustr(fault),
+                        'sii_return': ustr(fault),
+                    })
+                    invoice.write(inv_vals)
+                    new_cr.commit()
+                    new_cr.close()
                 raise
 
     @api.multi
