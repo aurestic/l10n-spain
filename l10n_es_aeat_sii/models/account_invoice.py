@@ -1147,33 +1147,21 @@ class AccountInvoice(models.Model):
                 invoice.write(inv_vals)
                 self.env.cr.commit()
             except Exception as fault:
-                # new_cr = RegistryManager.get(self.env.cr.dbname).cursor()
-                # env = api.Environment(new_cr, self.env.uid, self.env.context)
-                # invoice = env['account.invoice'].browse(self.id)
-                # inv_vals.update({
-                #     'sii_send_failed': True,
-                #     'sii_send_error': ustr(fault),
-                #     'sii_return': ustr(fault),
-                # })
-                # invoice.write(inv_vals)
-                # new_cr.commit()
-                # new_cr.close()
-                # raise
-                self.env.cr.rollback()
-                invoice = self.env['account.invoice'].browse(self.id)
-                # Si da un error de update recurrente, lo filtramos para que no lo
-                # escriba,ya que es un error de odoo,no del sii
                 if hasattr(fault, 'message') and fault.message.strip() == \
                         "no se pudo serializar el acceso debido a un update concurrente":
                     pass
                 else:
+                    new_cr = RegistryManager.get(self.env.cr.dbname).cursor()
+                    env = api.Environment(new_cr, self.env.uid, self.env.context)
+                    invoice = env['account.invoice'].browse(self.id)
                     inv_vals.update({
                         'sii_send_failed': True,
-                        'sii_send_error': fault,
-                        'sii_return': fault,
+                        'sii_send_error': ustr(fault),
+                        'sii_return': ustr(fault),
                     })
                     invoice.write(inv_vals)
-                    self.env.cr.commit()
+                    new_cr.commit()
+                    new_cr.close()
                 raise
 
     @api.multi
