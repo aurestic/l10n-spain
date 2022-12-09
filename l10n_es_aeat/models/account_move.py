@@ -26,4 +26,5 @@ class AccountMove(models.Model):
     @api.depends("journal_id")
     def _compute_thirdparty_invoice(self):
         for item in self:
+            item.read(["journal_id"])
             item.thirdparty_invoice = item.journal_id.thirdparty_invoice
