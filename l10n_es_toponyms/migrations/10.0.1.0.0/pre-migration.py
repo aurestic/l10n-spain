@@ -68,5 +68,16 @@ def migrate(env, version):
     """
     for old_xml_id, new_xml_id in XMLID_RENAMES:
         # Delete first records created by base module
-        env.ref(new_xml_id).unlink()
+        try:
+            with env.cr.savepoint():
+                env.ref(new_xml_id).unlink()
+        except Exception:
+            env["res.partner"].search(
+                [("state_id", "=", env.ref(new_xml_id).id)]
+            ).write(
+                {
+                    "state_id": env.ref(old_xml_id).id,
+                }
+            )
+            env.ref(new_xml_id).unlink()
     openupgrade.rename_xmlids(env.cr, XMLID_RENAMES)
