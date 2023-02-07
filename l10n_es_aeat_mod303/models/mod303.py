@@ -18,7 +18,7 @@ class L10nEsAeatMod303Report(models.Model):
         try:
             return self.env.ref(
                 'l10n_es_aeat_mod303.'
-                'aeat_mod303_2017_main_export_config').id
+                'aeat_mod303_2023_main_export_config').id
         except ValueError:
             return self.env['aeat.model.export.config']
 
@@ -29,7 +29,7 @@ class L10nEsAeatMod303Report(models.Model):
     @api.multi
     @api.depends('tax_lines', 'tax_lines.amount')
     def _compute_total_devengado(self):
-        casillas_devengado = (3, 6, 9, 11, 13, 15, 18, 21, 24, 26)
+        casillas_devengado = (3, 6, 9, 11, 13, 15, 18, 21, 24, 26, 152, 155, 158)
         for report in self:
             tax_lines = report.tax_lines.filtered(
                 lambda x: x.field_number in casillas_devengado)
@@ -355,14 +355,14 @@ class L10nEsAeatMod303Report(models.Model):
             self.regularizacion_anual = 0
             self.exonerated_390 = '2'
         if (not self.fiscalyear_id or
-                self.fiscalyear_id.date_start < '2018-01-01'):
+                self.fiscalyear_id.date_start < '2023-01-01'):
             self.export_config = self.env.ref(
                 'l10n_es_aeat_mod303.'
-                'aeat_mod303_2017_main_export_config')
+                'aeat_mod303_2022_main_export_config')
         else:
             self.export_config = self.env.ref(
                 'l10n_es_aeat_mod303.'
-                'aeat_mod303_2018_main_export_config')
+                'aeat_mod303_2023_main_export_config')
 
     @api.onchange('type')
     def onchange_type(self):
