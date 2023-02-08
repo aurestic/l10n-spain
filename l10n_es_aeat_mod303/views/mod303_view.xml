@@ -29,6 +29,7 @@
                     <field name="exonerated_390"
                         attrs="{'invisible': [('period_type', 'not in', ('4T', '12'))]}"
                     />
+                    <field name="casilla_17" invisible="1"/>
                 </field>
                 <group name="group_declaration" position="after">
                     <field name="currency_id" invisible="1"/>
