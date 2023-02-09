@@ -6,6 +6,8 @@
 
 from openerp import models, fields, api, _
 
+from calendar import monthrange
+
 NON_EDITABLE_ON_DONE = {'done': [('readonly', True)]}
 
 
@@ -18,7 +20,7 @@ class L10nEsAeatMod303Report(models.Model):
         try:
             return self.env.ref(
                 'l10n_es_aeat_mod303.'
-                'aeat_mod303_2017_main_export_config').id
+                'aeat_mod303_2022_main_export_config').id
         except ValueError:
             return self.env['aeat.model.export.config']
 
@@ -29,7 +31,7 @@ class L10nEsAeatMod303Report(models.Model):
     @api.multi
     @api.depends('tax_lines', 'tax_lines.amount')
     def _compute_total_devengado(self):
-        casillas_devengado = (3, 6, 9, 11, 13, 15, 18, 21, 24, 26)
+        casillas_devengado = (3, 6, 9, 11, 13, 15, 18, 21, 24, 26, 152, 155, 158)
         for report in self:
             tax_lines = report.tax_lines.filtered(
                 lambda x: x.field_number in casillas_devengado)
@@ -294,6 +296,11 @@ class L10nEsAeatMod303Report(models.Model):
             ("3", "3 Resto Países"),
         ],
         compute='_compute_marca_sepa')
+    casilla_17 = fields.Float(
+        string=u"[17] Porcentaje Recargo equivalencia 0%,0.5% y 0.62%",
+        compute='_compute_casilla_17',
+        store=True,
+    )
 
     @api.depends("partner_bank_id", "result_type")
     def _compute_marca_sepa(self):
@@ -329,6 +336,23 @@ class L10nEsAeatMod303Report(models.Model):
                 )).mapped('amount')
             )
 
+    @api.depends('tax_lines', 'tax_lines.amount')
+    def _compute_casilla_17(self):
+        for report in self:
+            recargo_lines = report.tax_lines.filtered(lambda x: x.field_number == 18).move_lines
+            max_tax = self.env["account.tax.code.template"]
+            max_sum_tax = 0.0
+            recargo_lines_tax_codes = recargo_lines.mapped("tax_code_id")
+            for tax in recargo_lines_tax_codes:
+                sum_tax = sum(recargo_lines.filtered(
+                    lambda lin: lin.tax_code_id == tax).mapped("tax_amount"))
+                if sum_tax >= max_sum_tax:
+                    max_tax = self.env["account.tax.code.template"].search([
+                        ("code", "=", tax.code)],
+                        limit=1)
+            if max_tax[:1].info:
+                report.casilla_17 = float(max_tax[:1].info)
+
     @api.multi
     def _compute_allow_posting(self):
         for report in self:
@@ -355,14 +379,71 @@ class L10nEsAeatMod303Report(models.Model):
             self.regularizacion_anual = 0
             self.exonerated_390 = '2'
         if (not self.fiscalyear_id or
-                self.fiscalyear_id.date_start < '2018-01-01'):
+                self.fiscalyear_id.date_start < '2022-01-01'):
             self.export_config = self.env.ref(
                 'l10n_es_aeat_mod303.'
                 'aeat_mod303_2017_main_export_config')
         else:
             self.export_config = self.env.ref(
                 'l10n_es_aeat_mod303.'
-                'aeat_mod303_2018_main_export_config')
+                'aeat_mod303_2022_main_export_config')
+
+        date_start = date_end = None
+        for report in self:
+            if not report.fiscalyear_id or not report.period_type:
+                continue
+            else:
+                year = fields.Date.from_string(report.fiscalyear_id.date_start).year
+                if report.period_type in ("1T", "2T", "3T", "4T"):
+                    # Trimestral
+                    starting_month = 1 + (int(report.period_type[0]) - 1) * 3
+                    ending_month = starting_month + 2
+                    date_start = fields.Date.from_string(
+                        "{}-{}-01".format(year, starting_month)
+                    )
+                    date_end = fields.Date.from_string(
+                        "%s-%s-%s"
+                        % (
+                            year,
+                            ending_month,
+                            monthrange(year, ending_month)[1],
+                        )
+                    )
+                elif report.period_type in (
+                    "01",
+                    "02",
+                    "03",
+                    "04",
+                    "05",
+                    "06",
+                    "07",
+                    "08",
+                    "09",
+                    "10",
+                    "11",
+                    "12",
+                ):
+                    # Mensual
+                    month = int(report.period_type)
+                    date_start = fields.Date.from_string(
+                        "{}-{}-01".format(year, month)
+                    )
+                    date_end = fields.Date.from_string(
+                        "%s-%s-%s"
+                        % (year, month, monthrange(year, month)[1])
+                    )
+
+        activities = self.env["l10n.es.aeat.mod303.report.activity.code"].search(
+            [
+                '|',
+                ('period_type', '=', False), ('period_type', '=', self.period_type),
+                '&',
+                '|', ('date_start', '=', False), ('date_start', '<=', date_start),
+                '|', ('date_end', '=', False), ('date_end', '>=', date_end),
+            ])
+        res = {}
+        res["domain"] = {'main_activity_code': [('id', 'in', activities.ids)]}
+        return res
 
     @api.onchange('type')
     def onchange_type(self):
@@ -396,8 +477,8 @@ class L10nEsAeatMod303Report(models.Model):
         """
         if 79 <= self.env.context.get('field_number', 0) <= 99 or \
                 self.env.context.get('field_number', 0) == 125:
-            if (self.exonerated_390 == '2' or not self.has_operation_volume
-                    or self.period_type not in ('4T', '12')):
+            if (self.exonerated_390 == '2' or not self.has_operation_volume or
+                    self.period_type not in ('4T', '12')):
                 return self.env['account.move.line']
         return super(L10nEsAeatMod303Report, self)._get_tax_code_lines(
             codes, periods=periods, include_children=include_children,
@@ -437,9 +518,8 @@ class L10nEsAeatMod303ReportActivityCode(models.Model):
             ('4T', '4T'),
             ('12', 'December'),
         ],
-        required=True,
     )
-    code = fields.Integer(
+    code = fields.Char(
         string="Activity code",
         required=True,
     )
@@ -448,3 +528,5 @@ class L10nEsAeatMod303ReportActivityCode(models.Model):
         translate=True,
         required=True,
     )
+    date_start = fields.Date(string="Starting date")
+    date_end = fields.Date(string="Ending date")
