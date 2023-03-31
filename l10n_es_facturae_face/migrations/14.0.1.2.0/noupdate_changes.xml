@@ -3,4 +3,9 @@
     <record id="face_backend" model="edi.backend">
         <field name="output_sent_processed_auto" eval="True" />
     </record>
+    <record id="facturae_face_update_exchange_type" model="edi.exchange.type">
+        <field
+            name="enable_snippet"
+        >result = record._has_exchange_record(record.env.ref("l10n_es_facturae_face.facturae_exchange_type"), record.env.ref("l10n_es_facturae_face.face_backend"))</field>
+    </record>
 </odoo>
