@@ -170,7 +170,7 @@ class L10nEsAeatReportExportToBoe(models.TransientModel):
         # Número identificativo de la declaración
         text += self._formatString(report.name, 13)
         # Declaración complementaria
-        text += self._formatString(report.type, 2).replace('N', ' ')
+        text += self._formatString(report.type, 2, align='>').replace('N', ' ')
         # Número identificativo de la declaración anterior
         text += self._formatNumber(report.previous_number, 13)
         return text
