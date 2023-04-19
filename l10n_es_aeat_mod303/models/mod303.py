@@ -20,9 +20,11 @@ class L10nEsAeatMod303Report(models.Model):
         try:
             return self.env.ref(
                 'l10n_es_aeat_mod303.'
-                'aeat_mod303_2022_main_export_config').id
+                'aeat_mod303_2023_main_export_config').id
         except ValueError:
-            return self.env['aeat.model.export.config']
+            return self.env.ref(
+                'l10n_es_aeat_mod303.'
+                'aeat_mod303_2022_main_export_config').id
 
     def _default_counterpart_303(self):
         return self.env['account.account'].search(
@@ -31,7 +33,7 @@ class L10nEsAeatMod303Report(models.Model):
     @api.multi
     @api.depends('tax_lines', 'tax_lines.amount')
     def _compute_total_devengado(self):
-        casillas_devengado = (3, 6, 9, 11, 13, 15, 18, 21, 24, 26, 152, 155, 158)
+        casillas_devengado = (152, 3, 155, 6, 9, 11, 13, 15, 158, 18, 21, 24, 26)
         for report in self:
             tax_lines = report.tax_lines.filtered(
                 lambda x: x.field_number in casillas_devengado)
@@ -80,6 +82,7 @@ class L10nEsAeatMod303Report(models.Model):
     @api.multi
     @api.depends('casilla_69', 'previous_result')
     def _compute_resultado_liquidacion(self):
+        # TODO: Add field 109
         for report in self:
             report.resultado_liquidacion = (
                 report.casilla_69 - report.previous_result)
@@ -379,14 +382,14 @@ class L10nEsAeatMod303Report(models.Model):
             self.regularizacion_anual = 0
             self.exonerated_390 = '2'
         if (not self.fiscalyear_id or
-                self.fiscalyear_id.date_start < '2022-01-01'):
-            self.export_config = self.env.ref(
-                'l10n_es_aeat_mod303.'
-                'aeat_mod303_2017_main_export_config')
-        else:
+                self.fiscalyear_id.date_start < '2023-01-01'):
             self.export_config = self.env.ref(
                 'l10n_es_aeat_mod303.'
                 'aeat_mod303_2022_main_export_config')
+        else:
+            self.export_config = self.env.ref(
+                'l10n_es_aeat_mod303.'
+                'aeat_mod303_2023_main_export_config')
 
         date_start = date_end = None
         for report in self:
