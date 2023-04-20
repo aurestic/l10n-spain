@@ -49,12 +49,12 @@ aeat_mod303_2022_map_line_84,aeat_mod303_2022_map,84,Operaciones no sujetas por 
 aeat_mod303_2022_map_line_93,aeat_mod303_2022_map,93,Entregas intracomunitarias exentas,0,"l10n_es.account_tax_code_template_EIDBYS"
 aeat_mod303_2022_map_line_94,aeat_mod303_2022_map,94,Exportaciones y otras operaciones exentas con derecho a deducción,0,"l10n_es.account_tax_code_template_EYOA"
 aeat_mod303_2022_map_line_96,aeat_mod303_2022_map,96,Operaciones realizadas por sujetos pasivos acogidos al régimen especial del recargo de equivalencia,0,"l10n_es.account_tax_code_template_REBI05,l10n_es.account_tax_code_template_REBI014,l10n_es.account_tax_code_template_REBI52"
-aeat_mod303_2022_map_line_120,aeat_mod303_2022_map,120,Operaciones no sujetas por reglas de localización (excepto las incluidas en la casilla 123),0,"l10n_es.account_tax_code_template_ONSOCIDSPQOEDAD"
+aeat_mod303_2022_map_line_120,aeat_mod303_2022_map,120,Operaciones no sujetas por reglas de localización (excepto las incluidas en la casilla 123),1,"l10n_es.account_tax_code_template_ONSOCIDSPQOEDAD"
 aeat_mod303_2022_map_line_122,aeat_mod303_2022_map,122,Operaciones sujetas con inversión del sujeto pasivo,0,"l10n_es.account_tax_code_template_VISP"
 aeat_mod303_2022_map_line_125,aeat_mod303_2022_map,125,Operaciones sujetas con inversión del sujeto pasivo,0,"l10n_es.account_tax_code_template_VISP"
 aeat_mod303_2022_map_line_150,aeat_mod303_2022_map,150,Régimen General - Base imponible 0%,0,
-aeat_mod303_2022_map_line_152,aeat_mod303_2022_map,152,Régimen General - Cuota 0%,0,
+aeat_mod303_2022_map_line_152,aeat_mod303_2022_map,152,Régimen General - Cuota 0%,1,
 aeat_mod303_2022_map_line_153,aeat_mod303_2022_map,153,Régimen General - Base imponible 5%,0,
-aeat_mod303_2022_map_line_155,aeat_mod303_2022_map,155,Régimen General - Cuota 5%,0,
+aeat_mod303_2022_map_line_155,aeat_mod303_2022_map,155,Régimen General - Cuota 5%,1,
 aeat_mod303_2022_map_line_156,aeat_mod303_2022_map,156,Recargo equivalencia - Base imponible 1.75%,0,
-aeat_mod303_2022_map_line_158,aeat_mod303_2022_map,158,Recargo equivalencia - Cuota 1.75%,0,
+aeat_mod303_2022_map_line_158,aeat_mod303_2022_map,158,Recargo equivalencia - Cuota 1.75%,1,
