@@ -12,6 +12,15 @@ class TestSiiPosSummary(common.TransactionCase):
         self.cash_journal = self.env["account.journal"].search(
             [("company_id", "=", self.env.company.id), ("type", "=", "cash")], limit=1
         )
+        self.currency_pricelist = self.env["product.pricelist"].create(
+            {
+                "name": "Public Pricelist",
+                "currency_id": self.env.company.currency_id.id,
+            }
+        )
+        self.pos_config.available_pricelist_ids.clear()
+        self.pos_config.available_pricelist_ids.add(self.currency_pricelist)
+        self.pos_config.pricelist_id = self.currency_pricelist
         self.pos_receivable_account = (
             self.env.company.account_default_pos_receivable_account_id
         )

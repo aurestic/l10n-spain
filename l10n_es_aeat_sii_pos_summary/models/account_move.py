@@ -32,7 +32,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         if self._context.get("from_pos"):
             return False
-        return super(AccountMove, self)._is_sii_type_breakdown_required()
+        return super(AccountMove, self)._is_sii_type_breakdown_required(taxes_dict)
 
     @api.model
     def _get_sii_tax_dict(self, tax_line, tax_lines):
