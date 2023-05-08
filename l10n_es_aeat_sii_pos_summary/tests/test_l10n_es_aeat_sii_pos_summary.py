@@ -18,8 +18,7 @@ class TestSiiPosSummary(common.TransactionCase):
                 "currency_id": self.env.company.currency_id.id,
             }
         )
-        self.pos_config.available_pricelist_ids.clear()
-        self.pos_config.available_pricelist_ids.add(self.currency_pricelist)
+        self.pos_config.available_pricelist_ids = [(6, 0 , self.currency_pricelist.ids)]
         self.pos_config.pricelist_id = self.currency_pricelist
         self.pos_receivable_account = (
             self.env.company.account_default_pos_receivable_account_id
