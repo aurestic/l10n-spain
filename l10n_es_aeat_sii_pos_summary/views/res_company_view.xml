@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_company_sii_pos_form" model="ir.ui.view">
+        <field name="name">res.company.sii.pos.form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="l10n_es_aeat_sii_oca.view_company_sii_form" />
+        <field name="arch" type="xml">
+            <group name="sii_description" position="after">
+                <group name="sii_pos">
+                    <field name="sii_header_pos" />
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

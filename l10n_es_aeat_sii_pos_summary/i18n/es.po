@@ -1,0 +1,184 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_es_aeat_sii_pos_summary
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-04 07:40+0000\n"
+"PO-Revision-Date: 2023-05-04 07:40+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: code:addons/l10n_es_aeat_sii_pos_summary/models/pos_session.py:0
+#, python-format
+msgid "A simplified invoice sequence must be cofigured"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields.selection,name:l10n_es_aeat_sii_pos_summary.selection__pos_session__sii_state__sent_w_errors
+msgid "Accepted with errors"
+msgstr "Aceptado con errores"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields.selection,name:l10n_es_aeat_sii_pos_summary.selection__pos_session__sii_state__cancelled
+msgid "Cancelled"
+msgstr "Cancelada"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields.selection,name:l10n_es_aeat_sii_pos_summary.selection__pos_session__sii_state__cancelled_modified
+msgid "Cancelled in SII but last modifications not sent"
+msgstr "Anulada en SII con modificaciones pendientes de comunicar"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model,name:l10n_es_aeat_sii_pos_summary.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model_terms:ir.ui.view,arch_db:l10n_es_aeat_sii_pos_summary.pos_session_sii_form
+msgid "Conector"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__simplified_jobs_ids
+msgid "Connector Jobs"
+msgstr "Trabajos en Cola"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_account_move__display_name
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__display_name
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_res_company__display_name
+msgid "Display Name"
+msgstr "Nombre a Mostrar"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_account_move__id
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__id
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_res_company__id
+msgid "ID"
+msgstr "ID (identificación)"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model,name:l10n_es_aeat_sii_pos_summary.model_account_move
+msgid "Journal Entry"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_account_move____last_update
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session____last_update
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_res_company____last_update
+msgid "Last Modified on"
+msgstr "Última Modificación en"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model_terms:ir.ui.view,arch_db:l10n_es_aeat_sii_pos_summary.pos_session_sii_form
+msgid "Modification to SII"
+msgstr "Modificación al SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: code:addons/l10n_es_aeat_sii_pos_summary/models/pos_session.py:0
+#, python-format
+msgid "Negative session %s cannot be sent to SII"
+msgstr "No se puede enviar al SII la sesión en negativo %s"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields.selection,name:l10n_es_aeat_sii_pos_summary.selection__pos_session__sii_state__not_sent
+msgid "Not sent"
+msgstr "No registrada"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model_terms:ir.ui.view,arch_db:l10n_es_aeat_sii_pos_summary.view_pos_session_sii_filter
+msgid "Not sent SII"
+msgstr "No enviadas al SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_res_company__sii_header_pos
+msgid "POS SII Header"
+msgstr "Encabezado SII TPV"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model,name:l10n_es_aeat_sii_pos_summary.model_pos_session
+msgid "Point of Sale Session"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields.selection,name:l10n_es_aeat_sii_pos_summary.selection__pos_session__sii_state__sent_modified
+msgid "Registered in SII but last modifications not sent"
+msgstr "Registro correcto en SII con modificaciones pendientes de comunicar"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model_terms:ir.ui.view,arch_db:l10n_es_aeat_sii_pos_summary.pos_session_sii_form
+msgid "SII"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__sii_csv
+msgid "SII CSV"
+msgstr "CSV SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__sii_enabled
+msgid "SII Enabled"
+msgstr "Activa para el SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__sii_return
+msgid "SII Return"
+msgstr "Retorno SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__sii_send_error
+msgid "SII Send Error"
+msgstr "Error Envío SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model_terms:ir.ui.view,arch_db:l10n_es_aeat_sii_pos_summary.pos_session_sii_form
+msgid "SII Technical"
+msgstr "SII Técnico"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__sii_description
+msgid "SII description"
+msgstr "Descripción SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__sii_content_sent
+msgid "SII last content sent"
+msgstr "Último contenido enviado al SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__sii_header_sent
+msgid "SII last header sent"
+msgstr "Último encabezado enviado al SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__sii_send_failed
+msgid "SII send failed"
+msgstr "Envío al SII fallido"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields,field_description:l10n_es_aeat_sii_pos_summary.field_pos_session__sii_state
+msgid "SII send state"
+msgstr "Estado envío SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model_terms:ir.ui.view,arch_db:l10n_es_aeat_sii_pos_summary.pos_session_sii_form
+msgid "Send SII"
+msgstr "Enviar al SII"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model:ir.model.fields.selection,name:l10n_es_aeat_sii_pos_summary.selection__pos_session__sii_state__sent
+msgid "Sent"
+msgstr "Enviada"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: model_terms:ir.ui.view,arch_db:l10n_es_aeat_sii_pos_summary.view_pos_session_sii_filter
+msgid "Sent SII"
+msgstr "Enviadas al SII"
