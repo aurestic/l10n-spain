@@ -22,6 +22,12 @@ msgid "A simplified invoice sequence must be cofigured"
 msgstr ""
 
 #. module: l10n_es_aeat_sii_pos_summary
+#: code:addons/l10n_es_aeat_sii_pos_summary/models/pos_session.py:0
+#, python-format
+msgid "Cannot send any summary to SII. All orders have been invoiced"
+msgstr ""
+
+#. module: l10n_es_aeat_sii_pos_summary
 #: model:ir.model.fields.selection,name:l10n_es_aeat_sii_pos_summary.selection__pos_session__sii_state__sent_w_errors
 msgid "Accepted with errors"
 msgstr ""
