@@ -40,4 +40,5 @@ class AccountMove(models.Model):
         tax_dict = super(AccountMove, self)._get_sii_tax_dict(tax_line, tax_lines)
         if self._context.get("from_pos"):
             tax_dict["CuotaRepercutida"] = round(tax_dict.pop("CuotaSoportada"), 2)
+            tax_dict["BaseImponible"] = round(tax_dict.pop("BaseImponible"), 2)
         return tax_dict

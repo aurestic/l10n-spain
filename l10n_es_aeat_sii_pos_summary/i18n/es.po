@@ -19,7 +19,13 @@ msgstr ""
 #: code:addons/l10n_es_aeat_sii_pos_summary/models/pos_session.py:0
 #, python-format
 msgid "A simplified invoice sequence must be cofigured"
-msgstr ""
+msgstr "Debe configurarse una secuencia de factura simplificada"
+
+#. module: l10n_es_aeat_sii_pos_summary
+#: code:addons/l10n_es_aeat_sii_pos_summary/models/pos_session.py:0
+#, python-format
+msgid "Cannot send any summary to SII. All orders have been invoiced"
+msgstr "No se puede enviar resumen al SII. Todo los pedidos se han facturado"
 
 #. module: l10n_es_aeat_sii_pos_summary
 #: model:ir.model.fields.selection,name:l10n_es_aeat_sii_pos_summary.selection__pos_session__sii_state__sent_w_errors

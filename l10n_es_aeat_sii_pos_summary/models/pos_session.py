@@ -110,6 +110,11 @@ class PosSession(models.Model):
         self.ensure_one()
         if not self.config_id.l10n_es_simplified_invoice_sequence_id:
             raise UserError(_("A simplified invoice sequence must be cofigured"))
+        pos_orders_sorted = self._get_sorted_pos_orders()
+        if not pos_orders_sorted:
+            raise UserError(
+                _("Cannot send any summary to SII. All orders have been invoiced")
+            )
 
     def _process_send_summary_to_sii(self, modification=False):
         for session in self:
@@ -202,6 +207,11 @@ class PosSession(models.Model):
             sum(pos_orders_sorted.mapped("amount_total")), 2
         )
         tipo_factura = "F4"
+        # si sólo hay 1 pedido no se puede enviar resumen porque
+        # el número inicio y fin es el mismo y devuelve error,
+        # en ese caso lo enviamos como factura simplificada: F2
+        if len(pos_orders_sorted) == 1:
+            tipo_factura = "F2"
         session_date = move._change_date_format(move.date)
         if pos_orders_amount_total < 0:
             raise UserError(
@@ -227,6 +237,8 @@ class PosSession(models.Model):
                 "ImporteTotal": importe_total,
             },
         }
+        if tipo_factura == "F2":
+            del orders["IDFactura"]["NumSerieFacturaEmisorResumenFin"]
         if move.sii_macrodata:
             orders["FacturaExpedida"].update(Macrodato="S")
         return orders
