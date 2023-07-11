@@ -475,7 +475,10 @@
                             t-foreach="move.line_ids.filtered(lambda r: not r.display_type and not r.exclude_from_invoice_tab)"
                             t-as="line"
                         >
-                            <t t-set="line_sign" t-value="-1 if move.move_type in ('in_refund', 'out_refund') else 1"/>
+                            <t
+                                t-set="line_sign"
+                                t-value="-1 if move.move_type in ('in_refund', 'out_refund') else 1"
+                            />
                             <t t-set="withheld" t-value="False" />
                             <t t-foreach="line.tax_ids" t-as="line_tax">
                                 <t t-if="line_tax.amount &lt; 0">
