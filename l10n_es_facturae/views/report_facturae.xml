@@ -477,7 +477,7 @@
                         >
                             <t
                                 t-set="line_sign"
-                                t-value="-1 if move.move_type in ('in_refund', 'out_refund') else 1"
+                                t-value="-1 if move.move_type == 'out_refund' else 1"
                             />
                             <t t-set="withheld" t-value="False" />
                             <t t-foreach="line.tax_ids" t-as="line_tax">
@@ -543,7 +543,7 @@
                                 t-value="line._get_price_total_and_subtotal_model(line.price_unit, line.quantity,0,line.move_id.currency_id, line.product_id, line.move_id.partner_id, line.tax_ids, line.move_id.move_type,).get('price_subtotal', 0.0)"
                             />
                             <TotalCost
-                                t-esc="('%.6f' if version == '3_2' else '%.8f') % subtotal_gross"
+                                t-esc="('%.6f' if version == '3_2' else '%.8f') % (line_sign * subtotal_gross)"
                             />
                             <DiscountsAndRebates t-if="line.discount != 0">
                                 <Discount>
@@ -552,7 +552,7 @@
                                         t-esc="('%.4f' if version == '3_2' else '%.8f') % line.discount"
                                     />
                                     <DiscountAmount
-                                        t-esc="('%.6f' if version == '3_2' else '%.8f') % (subtotal_gross - line.price_subtotal)"
+                                        t-esc="('%.6f' if version == '3_2' else '%.8f') % (line_sign * (subtotal_gross - line.price_subtotal))"
                                     />
                                 </Discount>
                             </DiscountsAndRebates>
