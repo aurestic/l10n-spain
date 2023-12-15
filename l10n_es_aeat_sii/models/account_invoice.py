@@ -1147,7 +1147,8 @@ class AccountInvoice(models.Model):
                 invoice.write(inv_vals)
                 self.env.cr.commit()
             except Exception as fault:
-                if hasattr(fault, 'message') and fault.message.strip() == \
+                if hasattr(fault, 'message') and hasattr(fault.message, 'strip') and \
+                        fault.message.strip() == \
                         "no se pudo serializar el acceso debido a un update concurrente":
                     pass
                 else:
