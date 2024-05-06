@@ -20,7 +20,7 @@ class TestL10nEsAeatSiiForceType(common.TransactionCase):
             )
         )
         cls.company = cls.env.ref("base.main_company")
-        cls.company.sii_enabled = True
+        cls.company.aeat_enabled = True
         cls.company.vat = "ES98765432M"
         cls.fiscal_position = cls.env["account.fiscal.position"].create(
             {
@@ -47,12 +47,12 @@ class TestL10nEsAeatSiiForceType(common.TransactionCase):
         )
 
     @mute_logger("odoo.models", "odoo.models.unlink", "odoo.addons.base.ir.ir_model")
-    def test_get_sii_header(self):
+    def test_get_aeat_header(self):
         # Tests with sii_allow_force_communication_type = False
         self.fiscal_position.sii_allow_force_communication_type = False
         self.assertFalse(self.fiscal_position.sii_allow_force_communication_type)
         self.invoice._onchange_sii_allow_force_communication_type()
-        self.assertFalse(self.invoice._get_sii_header().get("TipoComunicacion"))
+        self.assertFalse(self.invoice._get_aeat_header().get("TipoComunicacion"))
 
         # Tests with sii_allow_force_communication_type = True
         self.fiscal_position.sii_allow_force_communication_type = True
@@ -60,8 +60,8 @@ class TestL10nEsAeatSiiForceType(common.TransactionCase):
         self.assertTrue(self.fiscal_position.sii_allow_force_communication_type)
         self.assertEqual(self.fiscal_position.sii_forced_communication_type, "A0")
         self.invoice._onchange_sii_allow_force_communication_type()
-        self.assertEqual(self.invoice._get_sii_header().get("TipoComunicacion"), "A0")
+        self.assertEqual(self.invoice._get_aeat_header().get("TipoComunicacion"), "A0")
         self.fiscal_position.sii_forced_communication_type = "A1"
         self.assertEqual(self.fiscal_position.sii_forced_communication_type, "A1")
         self.invoice._onchange_sii_allow_force_communication_type()
-        self.assertEqual(self.invoice._get_sii_header().get("TipoComunicacion"), "A1")
+        self.assertEqual(self.invoice._get_aeat_header().get("TipoComunicacion"), "A1")

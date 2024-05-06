@@ -1,7 +1,8 @@
 # Copyright 2019 Tecnativa - Carlos Dauden
+# Copyright 2017 Tecnativa - Pedro M. Baeza
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.tools import ormcache
 
 
@@ -35,6 +36,22 @@ class ResPartner(models.Model):
     # 02 - NIF - VAT
     # 04 - Official document from the original country
     # 07 - Not registered on census
+    aeat_enabled = fields.Boolean(
+        compute="_compute_aeat_enabled",
+    )
+    aeat_simplified_invoice = fields.Boolean(
+        string="Simplified invoices in AEAT?",
+        help="Checking this mark, invoices done to this partner will be "
+        "sent to AEAT as simplified invoices.",
+    )
+
+    @api.depends("company_id")
+    def _compute_aeat_enabled(self):
+        aeat_enabled = any(self.env.companies.mapped("aeat_enabled"))
+        for partner in self:
+            partner.aeat_enabled = (
+                partner.company_id.aeat_enabled if partner.company_id else aeat_enabled
+            )
 
     def _map_aeat_country_code(self, country_code, extended=False):
         """Map country codes according the fiscal conditions.

@@ -8,10 +8,10 @@
         <field name="inherit_id" ref="base.view_partner_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='vat']" position="after">
-                <field name="sii_enabled" invisible="1" />
+                <field name="aeat_enabled" invisible="1" />
                 <field
-                    name="sii_simplified_invoice"
-                    attrs="{'invisible': [('sii_enabled', '=', False)]}"
+                    name="aeat_simplified_invoice"
+                    attrs="{'invisible': [('aeat_enabled', '=', False)]}"
                 />
             </xpath>
         </field>

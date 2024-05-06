@@ -25,8 +25,8 @@ class TestSpainPosSii(TestPoSCommon, TestL10nEsAeatSiiBase):
         cls.company = cls.env.user.company_id
         cls.company.write(
             {
-                "sii_enabled": True,
-                "sii_test": True,
+                "aeat_enabled": True,
+                "aeat_test": True,
                 "use_connector": True,
                 "sii_method": "manual",
                 "vat": "ESU2687761C",
@@ -60,7 +60,7 @@ class TestSpainPosSii(TestPoSCommon, TestL10nEsAeatSiiBase):
                 .create(
                     {
                         "name": "Test simplified default customer",
-                        "sii_simplified_invoice": True,
+                        "aeat_simplified_invoice": True,
                     }
                 )
                 .id,
@@ -199,7 +199,7 @@ class TestSpainPosSii(TestPoSCommon, TestL10nEsAeatSiiBase):
     def _compare_sii_dict(self, json_file, order):
         """Helper method for comparing the expected SII dict with ."""
         module = "l10n_es_pos_sii"
-        result_dict = order._get_sii_invoice_dict()
+        result_dict = order._get_aeat_invoice_dict()
         path = get_resource_path(module, "tests/json", json_file)
         if not path:
             raise Exception("Incorrect JSON file: %s" % json_file)
@@ -208,12 +208,12 @@ class TestSpainPosSii(TestPoSCommon, TestL10nEsAeatSiiBase):
         self.assertEqual(expected_dict, result_dict)
         return order
 
-    def test_01_partner_sii_enabled(self):
+    def test_01_partner_aeat_enabled(self):
         company_02 = self.env["res.company"].create({"name": "Company 02"})
         self.env.user.company_ids += company_02
-        self.assertTrue(self.partner.sii_enabled)
+        self.assertTrue(self.partner.aeat_enabled)
         self.partner.company_id = company_02
-        self.assertFalse(self.partner.sii_enabled)
+        self.assertFalse(self.partner.aeat_enabled)
 
     def test_02_json_orders(self):
         json_by_taxes = {
@@ -248,9 +248,9 @@ class TestSpainPosSii(TestPoSCommon, TestL10nEsAeatSiiBase):
             order.send_sii()
             self.assertTrue(order.order_jobs_ids)
 
-    def test_04_is_sii_simplified_invoice(self):
+    def test_04_is_aeat_simplified_invoice(self):
         for order in self.session.order_ids:
-            self.assertTrue(order._is_sii_simplified_invoice())
+            self.assertTrue(order._is_aeat_simplified_invoice())
 
     def test_05_sii_description(self):
         self.order.company_id.write(

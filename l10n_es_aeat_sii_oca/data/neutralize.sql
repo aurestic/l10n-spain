@@ -1,2 +1,2 @@
 -- DISABLE SII ON COMPANIES
-UPDATE res_company SET sii_test = true;
+UPDATE res_company SET aeat_test = true;

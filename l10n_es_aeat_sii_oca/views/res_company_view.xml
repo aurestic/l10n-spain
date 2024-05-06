@@ -5,48 +5,39 @@
     <record id="view_company_sii_form" model="ir.ui.view">
         <field name="name">res.company.sii.form</field>
         <field name="model">res.company</field>
-        <field name="inherit_id" ref="base.view_company_form" />
+        <field name="inherit_id" ref="l10n_es_aeat.view_company_aeat_form" />
         <field name="arch" type="xml">
-            <notebook position="inside">
-                <page name="sii" string="SII">
-                    <separator name="aeat_sii_config" string="AEAT SII Configuration" />
-                    <group name="sii_enabled">
-                        <field name="sii_enabled" />
-                    </group>
-                    <group attrs="{'invisible': [('sii_enabled', '=', False)]}">
-                        <group name="sii_config">
-                            <field name="sii_test" />
-                            <field name="sii_method" />
-                        </group>
-                        <group name="sii_description" string="Description config">
-                            <field name="sii_description_method" />
-                            <field
-                                name="sii_description"
-                                attrs="{'invisible': [('sii_description_method', '!=', 'fixed')]}"
-                            />
-                            <field name="sii_header_customer" />
-                            <field name="sii_header_supplier" />
-                        </group>
-                        <group name="sii_connector" string="Connector config">
-                            <field name="use_connector" />
-                            <field
-                                name="send_mode"
-                                attrs="{'invisible': [('use_connector', '=', False)]}"
-                            />
-                            <field
-                                name='sent_time'
-                                widget='float_time'
-                                attrs="{'invisible': ['|', ('use_connector', '=', False), ('send_mode', '!=', 'fixed')]}"
-                            />
-                            <field
-                                name='delay_time'
-                                widget='float_time'
-                                attrs="{'invisible': ['|', ('use_connector', '=', False), ('send_mode', '!=', 'delayed')]}"
-                            />
-                        </group>
-                    </group>
-                </page>
-            </notebook>
+            <xpath expr="//field[@name='aeat_test']" position="after">
+                <field name="sii_method" />
+            </xpath>
+            <xpath expr="//group[@name='aeat_config']" position="after">
+                <group name="sii_description" string="Description config">
+                    <field name="sii_description_method" />
+                    <field
+                        name="sii_description"
+                        attrs="{'invisible': [('sii_description_method', '!=', 'fixed')]}"
+                    />
+                    <field name="sii_header_customer" />
+                    <field name="sii_header_supplier" />
+                </group>
+                <group name="sii_connector" string="Connector config">
+                    <field name="use_connector" />
+                    <field
+                        name="send_mode"
+                        attrs="{'invisible': [('use_connector', '=', False)]}"
+                    />
+                    <field
+                        name='sent_time'
+                        widget='float_time'
+                        attrs="{'invisible': ['|', ('use_connector', '=', False), ('send_mode', '!=', 'fixed')]}"
+                    />
+                    <field
+                        name='delay_time'
+                        widget='float_time'
+                        attrs="{'invisible': ['|', ('use_connector', '=', False), ('send_mode', '!=', 'delayed')]}"
+                    />
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

@@ -14,8 +14,6 @@ from odoo import fields, models
 class ResCompany(models.Model):
     _inherit = "res.company"
 
-    sii_enabled = fields.Boolean(string="Enable SII")
-    sii_test = fields.Boolean(string="Is Test Environment?")
     sii_description_method = fields.Selection(
         string="SII Description Method",
         selection=[("auto", "Automatic"), ("fixed", "Fixed"), ("manual", "Manual")],

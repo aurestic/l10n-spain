@@ -36,7 +36,7 @@ class AccountMove(models.Model):
     @api.depends("company_id", "fiscal_position_id", "invoice_line_ids.tax_ids")
     def _compute_dua_invoice(self):
         for invoice in self:
-            taxes = invoice._get_sii_taxes_map(
+            taxes = invoice._get_aeat_taxes_map(
                 ["DUA"], invoice._get_document_fiscal_date()
             )
             invoice.sii_dua_invoice = invoice.invoice_line_ids.filtered(
@@ -44,10 +44,10 @@ class AccountMove(models.Model):
             )
 
     @api.depends("sii_dua_invoice", "fiscal_position_id")
-    def _compute_sii_enabled(self):
+    def _compute_aeat_enabled(self):
         """Don't sent secondary DUA invoices to SII."""
-        res = super()._compute_sii_enabled()
-        for invoice in self.filtered("sii_enabled"):
+        res = super()._compute_aeat_enabled()
+        for invoice in self.filtered("aeat_enabled"):
             dua_fiscal_position_id = self._get_dua_fiscal_position_id(
                 invoice.company_id
             )
@@ -56,10 +56,10 @@ class AccountMove(models.Model):
                 and invoice.fiscal_position_id.id == dua_fiscal_position_id
                 and not invoice.sii_dua_invoice
             ):
-                invoice.sii_enabled = False
+                invoice.aeat_enabled = False
         return res
 
-    def _get_sii_invoice_dict_in(self, cancel=False):
+    def _get_aeat_invoice_dict_in(self, cancel=False):
         """Según la documentación de la AEAT, la operación de importación se
         registra con TipoFactura = F5, sin FechaOperacion y con el NIF de la
         propia compañia en IDEmisorFactura y Contraparte
@@ -70,7 +70,7 @@ class AccountMove(models.Model):
         factura DUA se debe mantener el TipoFactura = LC. Puntos 4.24 y 4.25 de este pdf:
         https://www.agenciatributaria.es/static_files/AEAT/Contenidos_Comunes/La_Agencia_Tributaria/Modelos_y_formularios/Suministro_inmediato_informacion/V_1_1/Faqs_General/FAQs11_11_2020.pdf  # noqa
         """
-        res = super()._get_sii_invoice_dict_in(cancel=cancel)
+        res = super()._get_aeat_invoice_dict_in(cancel=cancel)
         if res.get("FacturaRecibida") and self.sii_dua_invoice:
             if not self.sii_lc_operation:
                 res["FacturaRecibida"]["TipoFactura"] = "F5"
