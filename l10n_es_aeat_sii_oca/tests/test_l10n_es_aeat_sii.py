@@ -224,6 +224,7 @@ class TestL10nEsAeatSii(TestL10nEsAeatSiiBase):
         self.assertTrue(self.invoice.invoice_jobs_ids)
 
     def test_partner_aeat_enabled(self):
+        # TODO: Move to l10n_es_aeat
         company_02 = self.env["res.company"].create({"name": "Company 02"})
         self.env.user.company_ids += company_02
         self.assertTrue(self.partner.aeat_enabled)

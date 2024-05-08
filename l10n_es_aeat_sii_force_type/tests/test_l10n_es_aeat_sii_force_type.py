@@ -20,7 +20,7 @@ class TestL10nEsAeatSiiForceType(common.TransactionCase):
             )
         )
         cls.company = cls.env.ref("base.main_company")
-        cls.company.aeat_enabled = True
+        cls.company.sii_enabled = True
         cls.company.vat = "ES98765432M"
         cls.fiscal_position = cls.env["account.fiscal.position"].create(
             {

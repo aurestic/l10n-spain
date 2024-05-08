@@ -277,7 +277,7 @@ class SiiMatchReport(models.Model):
                 ("move_type", "in", inv_type),
             ]
         )
-        for invoice in invoice_ids.filtered("aeat_enabled"):
+        for invoice in invoice_ids.filtered("sii_enabled"):
             if "out_invoice" in inv_type:
                 number = invoice.name or invoice.thirdparty_number or _("Draft")
             else:

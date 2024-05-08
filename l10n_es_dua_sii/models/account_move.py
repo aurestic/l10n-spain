@@ -44,10 +44,10 @@ class AccountMove(models.Model):
             )
 
     @api.depends("sii_dua_invoice", "fiscal_position_id")
-    def _compute_aeat_enabled(self):
+    def _compute_sii_enabled(self):
         """Don't sent secondary DUA invoices to SII."""
-        res = super()._compute_aeat_enabled()
-        for invoice in self.filtered("aeat_enabled"):
+        res = super()._compute_sii_enabled()
+        for invoice in self.filtered("sii_enabled"):
             dua_fiscal_position_id = self._get_dua_fiscal_position_id(
                 invoice.company_id
             )
@@ -56,7 +56,7 @@ class AccountMove(models.Model):
                 and invoice.fiscal_position_id.id == dua_fiscal_position_id
                 and not invoice.sii_dua_invoice
             ):
-                invoice.aeat_enabled = False
+                invoice.sii_enabled = False
         return res
 
     def _get_aeat_invoice_dict_in(self, cancel=False):

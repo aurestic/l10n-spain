@@ -138,7 +138,7 @@ class AccountMove(models.Model):
                 i.aeat_state == "sent"
                 and i.state == "posted"
                 and i.sii_csv
-                and i.aeat_enabled
+                and i.sii_enabled
             )
         )
         if not invoices._invoice_started_jobs():
@@ -161,7 +161,7 @@ class AccountMove(models.Model):
             )
         if (
             self.sii_csv
-            and self.aeat_enabled
+            and self.sii_enabled
             and self.aeat_state == "sent"
             and self.state == "posted"
         ):

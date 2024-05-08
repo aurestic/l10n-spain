@@ -589,7 +589,7 @@ class AccountMove(models.Model):
 
     def _post(self, soft=True):
         res = super()._post(soft=soft)
-        for invoice in self.filtered(lambda x: x.aeat_enabled and x.is_invoice()):
+        for invoice in self.filtered(lambda x: x.sii_enabled and x.is_invoice()):
             invoice._aeat_check_exceptions()
             if (
                 invoice.aeat_state in ["sent_modified", "sent"]
@@ -679,7 +679,7 @@ class AccountMove(models.Model):
     def cancel_sii(self):
         invoices = self.filtered(
             lambda i: (
-                i.aeat_enabled
+                i.sii_enabled
                 and i.state in ["cancel"]
                 and i.aeat_state in ["sent", "sent_w_errors", "sent_modified"]
             )
@@ -713,7 +713,7 @@ class AccountMove(models.Model):
                 _("You can not cancel this invoice because" " there is a job running!")
             )
         res = super().button_cancel()
-        for invoice in self.filtered(lambda x: x.aeat_enabled):
+        for invoice in self.filtered(lambda x: x.sii_enabled):
             if invoice.aeat_state == "sent":
                 invoice.aeat_state = "sent_modified"
             elif invoice.aeat_state == "cancelled_modified":
@@ -809,7 +809,7 @@ class AccountMove(models.Model):
         if not default_values_list:
             default_values_list = [{} for move in self]
         for move, default_values in zip(self, default_values_list):
-            if move.aeat_enabled:
+            if move.sii_enabled:
                 extra_dict = {}
                 sii_refund_type = self.env.context.get("sii_refund_type", False)
                 supplier_invoice_number_refund = move.env.context.get(

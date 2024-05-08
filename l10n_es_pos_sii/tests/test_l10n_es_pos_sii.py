@@ -25,7 +25,7 @@ class TestSpainPosSii(TestPoSCommon, TestL10nEsAeatSiiBase):
         cls.company = cls.env.user.company_id
         cls.company.write(
             {
-                "aeat_enabled": True,
+                "sii_enabled": True,
                 "sii_test": True,
                 "use_connector": True,
                 "sii_method": "manual",
@@ -209,11 +209,12 @@ class TestSpainPosSii(TestPoSCommon, TestL10nEsAeatSiiBase):
         return order
 
     def test_01_partner_aeat_enabled(self):
+        # TODO: redundante -> ya está l10n_es_aea_sii_oca
         company_02 = self.env["res.company"].create({"name": "Company 02"})
         self.env.user.company_ids += company_02
-        self.assertTrue(self.partner.aeat_enabled)
+        self.assertTrue(self.partner.sii_enabled)
         self.partner.company_id = company_02
-        self.assertFalse(self.partner.aeat_enabled)
+        self.assertFalse(self.partner.sii_enabled)
 
     def test_02_json_orders(self):
         json_by_taxes = {

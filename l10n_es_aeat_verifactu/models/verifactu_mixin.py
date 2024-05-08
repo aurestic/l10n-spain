@@ -111,3 +111,12 @@ class VerifactuMixin(models.AbstractModel):
             },
         }
         return inv_dict
+
+    def _aeat_check_exceptions(self):
+        """Inheritable method for exceptions control when sending veri*FACTU invoices."""
+        res = super()._aeat_check_exceptions()
+        if not self.company_id.verifactu_enabled:
+            raise UserError(_("This company doesn't have veri*FACTU enabled."))
+        if not self.verifactu_enabled:
+            raise UserError(_("This invoice is not veri*FACTU enabled."))
+        return res

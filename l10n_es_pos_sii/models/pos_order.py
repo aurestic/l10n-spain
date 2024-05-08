@@ -59,7 +59,7 @@ class PosOrder(models.Model):
         res.update(
             {
                 "sii_session_closed": (
-                    order.aeat_enabled and order.session_id.state == "closed"
+                    order.sii_enabled and order.session_id.state == "closed"
                 ),
             }
         )

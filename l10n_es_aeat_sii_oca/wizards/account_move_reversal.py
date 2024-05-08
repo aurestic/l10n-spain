@@ -44,7 +44,7 @@ class AccountMoveReversal(models.TransientModel):
             to_refund = invoices.filtered(
                 lambda i: i.move_type in ("in_invoice", "out_invoice")
             )
-            if any(to_refund.mapped("company_id.aeat_enabled")):
+            if any(to_refund.mapped("company_id.sii_enabled")):
                 defaults["sii_refund_type"] = "I"
                 defaults["sii_refund_type_required"] = True
             supplier_invoices = to_refund.filtered(
@@ -52,7 +52,7 @@ class AccountMoveReversal(models.TransientModel):
             )
             if supplier_invoices:
                 defaults["supplier_invoice_number_refund_required"] = any(
-                    supplier_invoices.mapped("company_id.aeat_enabled")
+                    supplier_invoices.mapped("company_id.sii_enabled")
                 )
         return defaults
 

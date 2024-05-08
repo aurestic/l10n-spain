@@ -246,7 +246,7 @@ class SiiMixin(models.AbstractModel):
     def send_sii(self):
         documents = self.filtered(
             lambda document: (
-                document.aeat_enabled
+                document.sii_enabled
                 and document.state in self._get_valid_document_states()
                 and document.aeat_state not in ["sent", "cancelled"]
             )
@@ -336,6 +336,10 @@ class SiiMixin(models.AbstractModel):
             and not is_simplified_invoice
         ):
             raise UserError(_("The partner has not a VAT configured."))
+        if not self.company_id.sii_enabled:
+            raise UserError(_("This company doesn't have SII enabled."))
+        if not self.sii_enabled:
+            raise UserError(_("This invoice is not SII enabled."))
         return res
 
     def _get_document_fiscal_date(self):
