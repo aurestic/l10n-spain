@@ -20,6 +20,7 @@ class AccountMove(models.Model):
         store=True,
         readonly=False,
     )
+
     thirdparty_number = fields.Char(
         string="Third-party number",
         index=True,

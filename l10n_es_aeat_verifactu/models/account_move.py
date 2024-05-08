@@ -20,7 +20,7 @@ class AccountMove(models.Model):
             if invoice.company_id.verifactu_enabled and invoice.is_invoice():
                 invoice.verifactu_enabled = (
                     invoice.fiscal_position_id
-                    and invoice.fiscal_position_id.verifactu_active
+                    and invoice.fiscal_position_id.aeat_active
                 ) or not invoice.fiscal_position_id
             else:
                 invoice.verifactu_enabled = False

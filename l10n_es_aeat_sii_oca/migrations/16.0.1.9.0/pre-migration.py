@@ -13,12 +13,6 @@ _rename_fields = [
     (
         "account.move",
         "account_move",
-        "sii_header_sent",
-        "aeat_header_sent",
-    ),
-    (
-        "account.move",
-        "account_move",
         "sii_send_error",
         "aeat_send_error",
     ),
@@ -27,6 +21,30 @@ _rename_fields = [
         "account_move",
         "sii_send_failed",
         "aeat_send_failed",
+    ),
+    (
+        "account.move",
+        "account_move",
+        "sii_header_sent",
+        "aeat_header_sent",
+    ),
+    (
+        "account.move",
+        "account_move",
+        "sii_content_sent",
+        "aeat_content_sent",
+    ),
+    (
+        "account.fiscal.position",
+        "account_fiscal_position",
+        "sii_active",
+        "aeat_active",
+    ),
+    (
+        "res.partner",
+        "res_partner",
+        "sii_simplified_invoice",
+        "aeat_simplified_invoice",
     ),
 ]
 

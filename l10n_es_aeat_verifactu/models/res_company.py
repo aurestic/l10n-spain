@@ -8,4 +8,4 @@ class ResCompany(models.Model):
     _inherit = "res.company"
 
     verifactu_enabled = fields.Boolean(string="Enable veri*FACTU")
-    verifactu_test = fields.Boolean(string="Is Test Environment?")
+    verifactu_test = fields.Boolean(string="Is it the veri*FACTU test environment?")
