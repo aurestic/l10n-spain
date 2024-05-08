@@ -78,13 +78,6 @@ class AeatMixin(models.AbstractModel):
         copy=False,
         readonly=True,
     )
-    aeat_enabled = fields.Boolean(
-        string="Enable AEAT",
-        compute="_compute_aeat_enabled",
-    )
-
-    def _compute_aeat_enabled(self):
-        raise NotImplementedError
 
     def _get_document_date(self):
         raise NotImplementedError()
@@ -178,6 +171,7 @@ class AeatMixin(models.AbstractModel):
     def _aeat_check_exceptions(self):
         """Inheritable method for exceptions control when sending AEAT documentss."""
         self.ensure_one()
+        company = self.company_id
         partner = self._aeat_get_partner()
         country_code = self._get_aeat_country_code()
         is_simplified_invoice = self._is_aeat_simplified_invoice()
@@ -187,7 +181,7 @@ class AeatMixin(models.AbstractModel):
             raise UserError(
                 _("You have to select what account chart template use this" " company.")
             )
-        if not self.company_id.aeat_enabled:
+        if not company.sii_enabled and not company.verifactu_enabled:
             raise UserError(_("This company doesn't have AEAT enabled."))
         if not self.aeat_enabled:
             raise UserError(_("This invoice is not AEAT enabled."))

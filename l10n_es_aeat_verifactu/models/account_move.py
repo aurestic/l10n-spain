@@ -1,4 +1,4 @@
-from odoo import models
+from odoo import api, models
 
 VERIFACTU_VALID_INVOICE_STATES = ["posted"]
 
@@ -6,6 +6,24 @@ VERIFACTU_VALID_INVOICE_STATES = ["posted"]
 class AccountMove(models.Model):
     _name = "account.move"
     _inherit = ["account.move", "verifactu.mixin"]
+
+    @api.depends(
+        "company_id",
+        "company_id.verifactu_enabled",
+        "move_type",
+        "fiscal_position_id",
+        "fiscal_position_id.aeat_active",
+    )
+    def _compute_verifactu_enabled(self):
+        """Compute if the invoice is enabled for the veri*FACTU"""
+        for invoice in self:
+            if invoice.company_id.verifactu_enabled and invoice.is_invoice():
+                invoice.verifactu_enabled = (
+                    invoice.fiscal_position_id
+                    and invoice.fiscal_position_id.verifactu_active
+                ) or not invoice.fiscal_position_id
+            else:
+                invoice.verifactu_enabled = False
 
     def _get_document_date(self):
         """

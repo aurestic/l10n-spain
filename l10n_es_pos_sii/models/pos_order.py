@@ -32,19 +32,19 @@ class PosOrder(models.Model):
 
     @api.depends(
         "company_id",
-        "company_id.aeat_enabled",
+        "company_id.sii_enabled",
         "fiscal_position_id",
         "fiscal_position_id.aeat_active",
     )
-    def _compute_aeat_enabled(self):
+    def _compute_sii_enabled(self):
         """Compute if the order is enabled for the SII"""
         for order in self:
-            if order.company_id.aeat_enabled:
-                order.aeat_enabled = (
+            if order.company_id.sii_enabled:
+                order.sii_enabled = (
                     order.fiscal_position_id and order.fiscal_position_id.aeat_active
                 ) or not order.fiscal_position_id
             else:
-                order.aeat_enabled = False
+                order.sii_enabled = False
 
     @api.depends("amount_total")
     def _compute_sii_refund_type(self):

@@ -15,15 +15,6 @@
                             <field name="representative_vat" />
                         </group>
                     </group>
-                    <separator name="aeat_aeat_config" string="AEAT Configuration" />
-                    <group name="aeat_enabled">
-                        <field name="aeat_enabled" />
-                    </group>
-                    <group attrs="{'invisible': [('aeat_enabled', '=', False)]}">
-                        <group name="aeat_config">
-                            <field name="aeat_test" />
-                        </group>
-                    </group>
                 </page>
             </notebook>
         </field>

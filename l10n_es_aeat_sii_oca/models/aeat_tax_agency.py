@@ -55,8 +55,8 @@ class AeatTaxAgency(models.Model):
         wsdl_field = SII_WDSL_MAPPING[mapping_key]
         wsdl_test_field = wsdl_field + "_test_address"
         port_name = SII_PORT_NAME_MAPPING[mapping_key]
-        address = getattr(self, wsdl_test_field) if company.aeat_test else False
-        if not address and company.aeat_test:
+        address = getattr(self, wsdl_test_field) if company.sii_test else False
+        if not address and company.sii_test:
             # If not test address is provides we try to get it using the port name.
             port_name += "Pruebas"
         return {

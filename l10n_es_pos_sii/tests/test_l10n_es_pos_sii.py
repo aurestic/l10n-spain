@@ -26,7 +26,7 @@ class TestSpainPosSii(TestPoSCommon, TestL10nEsAeatSiiBase):
         cls.company.write(
             {
                 "aeat_enabled": True,
-                "aeat_test": True,
+                "sii_test": True,
                 "use_connector": True,
                 "sii_method": "manual",
                 "vat": "ESU2687761C",

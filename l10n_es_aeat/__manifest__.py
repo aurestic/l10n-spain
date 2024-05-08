@@ -45,7 +45,6 @@
         "views/aeat_certificate_view.xml",
         "views/account_journal_view.xml",
         "views/account_move_view.xml",
-        "views/account_fiscal_position_view.xml",
     ],
     "installable": True,
     "maintainers": ["pedrobaeza"],

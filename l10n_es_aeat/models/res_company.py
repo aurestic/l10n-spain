@@ -18,8 +18,7 @@ class ResCompany(models.Model):
         size=9,
         help="Legal Representative VAT number for all the AEAT reports of this company.",
     )
-    aeat_enabled = fields.Boolean(string="Enable AEAT")
-    aeat_test = fields.Boolean(string="Is Test Environment?")
+    verifactu_enabled = fields.Boolean(string="Enable Verifactu")
 
     @api.model_create_multi
     def create(self, vals_list):

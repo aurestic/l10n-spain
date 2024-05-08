@@ -20,5 +20,7 @@
         "data/aeat_sii_tax_agency_data.xml",
         "views/aeat_tax_agency_view.xml",
         "views/account_move_view.xml",
+        "views/account_fiscal_position_view.xml",
+        "views/res_company_view.xml",
     ],
 }

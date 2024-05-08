@@ -157,8 +157,8 @@ class TestL10nEsAeatSiiBase(TestL10nEsAeatModBase, TestL10nEsAeatCertificateBase
         cls.invoice = cls._create_invoice("out_invoice")
         cls.company.write(
             {
-                "aeat_enabled": True,
-                "aeat_test": True,
+                "sii_enabled": True,
+                "sii_test": True,
                 "use_connector": True,
                 "vat": "ESU2687761C",
                 "sii_description_method": "manual",
@@ -370,7 +370,7 @@ class TestL10nEsAeatSii(TestL10nEsAeatSiiBase):
         proxy = invoice._connect_aeat(invoice.move_type)
         address = proxy._binding_options["address"]
         self.assertTrue(address)
-        if company.aeat_test and tax_agency:
+        if company.sii_test and tax_agency:
             params = tax_agency._connect_params_sii(invoice.move_type, company)
             if params["address"]:
                 self.assertEqual(address, params["address"])
@@ -386,7 +386,7 @@ class TestL10nEsAeatSii(TestL10nEsAeatSiiBase):
     def test_tax_agencies_sandbox(self):
         self.sii_cert.company_id = self.invoice.company_id.id
         self._activate_certificate()
-        self.invoice.company_id.aeat_test = True
+        self.invoice.company_id.sii_test = True
         self._check_tax_agencies(self.invoice)
         in_invoice = self._create_invoice("in_invoice")
         self._check_tax_agencies(in_invoice)
@@ -394,7 +394,7 @@ class TestL10nEsAeatSii(TestL10nEsAeatSiiBase):
     def test_tax_agencies_production(self):
         self.sii_cert.company_id = self.invoice.company_id.id
         self._activate_certificate()
-        self.invoice.company_id.aeat_test = False
+        self.invoice.company_id.sii_test = False
         self._check_tax_agencies(self.invoice)
         in_invoice = self._create_invoice("in_invoice")
         self._check_tax_agencies(in_invoice)

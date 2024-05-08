@@ -101,6 +101,13 @@ class SiiMixin(models.AbstractModel):
         "greater o equal to 100 000 000,00 euros.",
         compute="_compute_macrodata",
     )
+    sii_enabled = fields.Boolean(
+        string="Enable SII",
+        compute="_compute_sii_enabled",
+    )
+
+    def _compute_sii_enabled(self):
+        raise NotImplementedError
 
     def _compute_sii_refund_type(self):
         self.sii_refund_type = False

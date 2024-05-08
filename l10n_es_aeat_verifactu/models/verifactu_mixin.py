@@ -1,4 +1,4 @@
-from odoo import _, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.l10n_es_aeat.models.aeat_mixin import round_by_keys
@@ -10,6 +10,14 @@ class VerifactuMixin(models.AbstractModel):
     _name = "verifactu.mixin"
     _inherit = "aeat.mixin"
     _description = "Verifactu Mixin"
+
+    verifactu_enabled = fields.Boolean(
+        string="Enable AEAT",
+        compute="_compute_verifactu_enabled",
+    )
+
+    def _compute_verifactu_enabled(self):
+        raise NotImplementedError
 
     def _connect_params_aeat(self, mapping_key):
         self.ensure_one()

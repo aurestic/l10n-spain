@@ -26,26 +26,26 @@
                     string="Send to SII"
                     name="send_sii"
                     groups="l10n_es_aeat.group_account_aeat"
-                    attrs="{'invisible': ['|','|',('aeat_enabled', '=', False), ('state', 'not in', ['posted']), ('aeat_state','in',['sent','cancelled'])]}"
+                    attrs="{'invisible': ['|','|',('sii_enabled', '=', False), ('state', 'not in', ['posted']), ('aeat_state','in',['sent','cancelled'])]}"
                 />
                 <button
                     type="object"
                     string="Send cancellation to SII"
                     name="cancel_sii"
                     groups="l10n_es_aeat.group_account_aeat"
-                    attrs="{'invisible': ['|','|',('aeat_enabled', '=', False), ('state', 'not in', ['cancel']), ('aeat_state', 'not in', ['sent','sent_w_errors','sent_modified'])]}"
+                    attrs="{'invisible': ['|','|',('sii_enabled', '=', False), ('state', 'not in', ['cancel']), ('aeat_state', 'not in', ['sent','sent_w_errors','sent_modified'])]}"
                 />
             </button>
             <notebook position="inside">
                 <page
                     string="SII"
                     name="page_sii"
-                    attrs="{'invisible': [('aeat_enabled', '=', False)]}"
+                    attrs="{'invisible': [('sii_enabled', '=', False)]}"
                 >
                     <group string="SII Information" name="group_sii_information">
                         <field
                             name="sii_description"
-                            attrs="{'required': [('aeat_enabled', '=', True)]}"
+                            attrs="{'required': [('sii_enabled', '=', True)]}"
                         />
                         <field name="thirdparty_invoice" />
                         <field
@@ -54,7 +54,7 @@
                         />
                         <field
                             name="sii_refund_type"
-                            attrs="{'required': [('aeat_enabled', '=', True),('move_type', 'in', ('out_refund','in_refund'))], 'invisible': [('move_type', 'not in', ('out_refund','in_refund'))]}"
+                            attrs="{'required': [('sii_enabled', '=', True),('move_type', 'in', ('out_refund','in_refund'))], 'invisible': [('move_type', 'not in', ('out_refund','in_refund'))]}"
                         />
                         <field
                             name="sii_refund_specific_invoice_type"
@@ -65,7 +65,7 @@
                             name="sii_registration_key"
                             groups="account.group_account_invoice"
                             domain="[('type', '=', sii_registration_key_domain)]"
-                            attrs="{'required': [('aeat_enabled', '=', True)]}"
+                            attrs="{'required': [('sii_enabled', '=', True)]}"
                             widget="selection"
                         />
                         <field
@@ -85,7 +85,7 @@
                             groups="account.group_account_invoice"
                             invisible="1"
                         />
-                        <field name="aeat_enabled" invisible="1" />
+                        <field name="sii_enabled" invisible="1" />
                         <field name="sii_lc_operation" />
                         <field
                             name="sii_property_location"

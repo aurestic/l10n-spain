@@ -29,24 +29,6 @@ class AccountMove(models.Model):
         help="Número de la factura emitida por un tercero.",
     )
 
-    @api.depends(
-        "company_id",
-        "company_id.aeat_enabled",
-        "move_type",
-        "fiscal_position_id",
-        "fiscal_position_id.aeat_active",
-    )
-    def _compute_aeat_enabled(self):
-        """Compute if the invoice is enabled for the veri*FACTU"""
-        for invoice in self:
-            if invoice.company_id.aeat_enabled and invoice.is_invoice():
-                invoice.aeat_enabled = (
-                    invoice.fiscal_position_id
-                    and invoice.fiscal_position_id.aeat_active
-                ) or not invoice.fiscal_position_id
-            else:
-                invoice.aeat_enabled = False
-
     @api.depends("journal_id")
     def _compute_thirdparty_invoice(self):
         for item in self:

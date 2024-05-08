@@ -788,21 +788,21 @@ class AccountMove(models.Model):
 
     @api.depends(
         "company_id",
-        "company_id.aeat_enabled",
+        "company_id.sii_enabled",
         "move_type",
         "fiscal_position_id",
         "fiscal_position_id.aeat_active",
     )
-    def _compute_aeat_enabled(self):
+    def _compute_sii_enabled(self):
         """Compute if the invoice is enabled for the SII"""
         for invoice in self:
-            if invoice.company_id.aeat_enabled and invoice.is_invoice():
-                invoice.aeat_enabled = (
+            if invoice.company_id.sii_enabled and invoice.is_invoice():
+                invoice.sii_enabled = (
                     invoice.fiscal_position_id
                     and invoice.fiscal_position_id.aeat_active
                 ) or not invoice.fiscal_position_id
             else:
-                invoice.aeat_enabled = False
+                invoice.sii_enabled = False
 
     def _reverse_moves(self, default_values_list=None, cancel=False):
         # OVERRIDE
