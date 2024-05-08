@@ -7,11 +7,6 @@ from odoo import api, fields, models
 class AccountFiscalPosition(models.Model):
     _inherit = "account.fiscal.position"
 
-    sii_enabled = fields.Boolean(
-        related="company_id.sii_enabled",
-        readonly=True,
-    )
-
     @api.model
     def _get_selection_sii_exempt_cause(self):
         return self.env["product.template"].fields_get(allfields=["sii_exempt_cause"])[
@@ -23,6 +18,10 @@ class AccountFiscalPosition(models.Model):
         default_dict = self.env["product.template"].default_get(["sii_exempt_cause"])
         return default_dict.get("sii_exempt_cause")
 
+    sii_enabled = fields.Boolean(
+        related="company_id.sii_enabled",
+        readonly=True,
+    )
     sii_registration_key_sale = fields.Many2one(
         "aeat.sii.mapping.registration.keys",
         "Default SII Registration Key for Sales",

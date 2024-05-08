@@ -48,16 +48,6 @@ class SiiMixin(models.AbstractModel):
     )
     sii_csv = fields.Char(string="SII CSV", copy=False, readonly=True)
     sii_return = fields.Text(string="SII Return", copy=False, readonly=True)
-    aeat_header_sent = fields.Text(
-        string="SII last header sent",
-        copy=False,
-        readonly=True,
-    )
-    aeat_content_sent = fields.Text(
-        string="SII last content sent",
-        copy=False,
-        readonly=True,
-    )
     sii_refund_type = fields.Selection(
         selection=[
             # ('S', 'By substitution'), - Removed as not fully supported
@@ -95,19 +85,16 @@ class SiiMixin(models.AbstractModel):
         readonly=True,
         string="SII Code",
     )
+    sii_enabled = fields.Boolean(
+        string="Enable SII",
+        compute="_compute_sii_enabled",
+    )
     sii_macrodata = fields.Boolean(
         string="MacroData",
         help="Check to confirm that the document has an absolute amount "
         "greater o equal to 100 000 000,00 euros.",
         compute="_compute_macrodata",
     )
-    sii_enabled = fields.Boolean(
-        string="Enable SII",
-        compute="_compute_sii_enabled",
-    )
-
-    def _compute_sii_enabled(self):
-        raise NotImplementedError
 
     def _compute_sii_refund_type(self):
         self.sii_refund_type = False
@@ -160,6 +147,9 @@ class SiiMixin(models.AbstractModel):
         """
         for record in self:
             record.sii_registration_key_code = record.sii_registration_key.code
+
+    def _compute_sii_enabled(self):
+        raise NotImplementedError
 
     def _compute_macrodata(self):
         for document in self:
@@ -326,20 +316,19 @@ class SiiMixin(models.AbstractModel):
     def _aeat_check_exceptions(self):
         """Inheritable method for exceptions control when sending SII invoices."""
         res = super()._aeat_check_exceptions()
-        gen_type = self._get_sii_gen_type()
-        partner = self._aeat_get_partner()
-        country_code = self._get_aeat_country_code()
-        is_simplified_invoice = self._is_aeat_simplified_invoice()
-        if (
-            (gen_type != 3 or country_code == "ES")
-            and not partner.vat
-            and not is_simplified_invoice
-        ):
-            raise UserError(_("The partner has not a VAT configured."))
-        if not self.company_id.sii_enabled:
-            raise UserError(_("This company doesn't have SII enabled."))
-        if not self.sii_enabled:
-            raise UserError(_("This invoice is not SII enabled."))
+        if self.company_id.sii_enabled:
+            gen_type = self._get_sii_gen_type()
+            partner = self._aeat_get_partner()
+            country_code = self._get_aeat_country_code()
+            is_simplified_invoice = self._is_aeat_simplified_invoice()
+            if (
+                (gen_type != 3 or country_code == "ES")
+                and not partner.vat
+                and not is_simplified_invoice
+            ):
+                raise UserError(_("The partner has not a VAT configured."))
+            if not self.sii_enabled:
+                raise UserError(_("This invoice is not SII enabled."))
         return res
 
     def _get_document_fiscal_date(self):
