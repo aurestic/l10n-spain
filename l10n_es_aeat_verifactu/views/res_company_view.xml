@@ -9,7 +9,10 @@
         <field name="arch" type="xml">
             <notebook position="inside">
                 <page name="verifactu" string="veri*FACTU">
-                    <separator name="aeat_verifactu_config" string="AEAT veri*FACTU Configuration" />
+                    <separator
+                        name="aeat_verifactu_config"
+                        string="AEAT veri*FACTU Configuration"
+                    />
                     <group name="verifactu_enabled">
                         <field name="verifactu_enabled" />
                     </group>
