@@ -223,13 +223,12 @@ class TestL10nEsAeatSii(TestL10nEsAeatSiiBase):
     def test_job_creation(self):
         self.assertTrue(self.invoice.invoice_jobs_ids)
 
-    def test_partner_aeat_enabled(self):
-        # TODO: Move to l10n_es_aeat
+    def test_partner_sii_enabled(self):
         company_02 = self.env["res.company"].create({"name": "Company 02"})
         self.env.user.company_ids += company_02
-        self.assertTrue(self.partner.aeat_enabled)
+        self.assertTrue(self.partner.sii_enabled)
         self.partner.company_id = company_02
-        self.assertFalse(self.partner.aeat_enabled)
+        self.assertFalse(self.partner.sii_enabled)
 
     def test_get_invoice_data(self):
         mapping = [

@@ -1,5 +1,6 @@
 from . import aeat_tax_agency
 from . import res_company
+from . import res_partner
 from . import aeat_sii_mapping_registration_keys
 from . import aeat_sii_map
 from . import product_product

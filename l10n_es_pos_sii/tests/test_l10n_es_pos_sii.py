@@ -208,8 +208,7 @@ class TestSpainPosSii(TestPoSCommon, TestL10nEsAeatSiiBase):
         self.assertEqual(expected_dict, result_dict)
         return order
 
-    def test_01_partner_aeat_enabled(self):
-        # TODO: redundante -> ya está l10n_es_aea_sii_oca
+    def test_01_partner_sii_enabled(self):
         company_02 = self.env["res.company"].create({"name": "Company 02"})
         self.env.user.company_ids += company_02
         self.assertTrue(self.partner.sii_enabled)
