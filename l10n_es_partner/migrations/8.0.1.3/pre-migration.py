@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from psycopg2 import IntegrityError
+# from psycopg2 import IntegrityError
 __name__ = ("Cambia identificadores de los bancos por nueva nomenclatura")
 
 
@@ -34,18 +34,20 @@ def clear_identifiers(cr):
                "                            WHERE id=%s) "
                "WHERE id=%s" % (row[1], row[0]))
         try:
-            cr.execute(sql)
-            cr.commit()
-        except IntegrityError:
+            with cr.savepoint():
+                cr.execute(sql)
+                # cr.commit()
+        except Exception:
             # XML-ID duplicado - Intentar eliminar
-            cr.rollback()
+            # cr.rollback()
             try:
-                cr.execute("DELETE FROM res_bank WHERE id=%s" % row[1])
-                cr.execute("DELETE FROM ir_model_data WHERE id=%s" % row[0])
-                cr.commit()
-            except IntegrityError:
+                with cr.savepoint():
+                    cr.execute("DELETE FROM res_bank WHERE id=%s" % row[1])
+                    cr.execute("DELETE FROM ir_model_data WHERE id=%s" % row[0])
+                    # cr.commit()
+            except Exception:
                 # No se puede eliminar por dependencias - Ignorar error
-                cr.rollback()
+                raise
 
 
 def migrate(cr, version):
