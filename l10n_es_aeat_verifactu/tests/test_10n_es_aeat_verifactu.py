@@ -22,24 +22,23 @@ class TestL10nEsAeatSiiBase(TestL10nEsAeatModBase, TestL10nEsAeatCertificateBase
         expected_hash = (
             "3C464DAF61ACB827C65FDA19F352A4E3BDC2C640E9E9FC4CC058073F38F12F60"
         )
+        issuerID = "89890001K"
+        serialNumber = "12345678/G33"
+        expeditionDate = "01-01-2024"
+        documentType = "F1"
+        amountTax = "12.35"
+        amountTotal = "123.45"
+        previousHash = ""
+        registrationDate = "2024-01-01T19:20:30+01:00"
         verifactu_hash_string = (
-            "IDEmisorFactura={}&"
-            "NumSerieFactura={}&"
-            "FechaExpedicionFactura={}&"
-            "TipoFactura={}&"
-            "CuotaTotal={}&"
-            "ImporteTotal={}&"
-            "Huella={}&"
-            "FechaHoraHusoGenRegistro={}"
-        ).format(
-            "89890001K",
-            "12345678/G33",
-            "01-01-2024",
-            "F1",
-            "12.35",
-            "123.45",
-            "",
-            "2024-01-01T19:20:30+01:00",
+            f"IDEmisorFactura={issuerID}&"
+            f"NumSerieFactura={serialNumber}&"
+            f"FechaExpedicionFactura={expeditionDate}&"
+            f"TipoFactura={documentType}&"
+            f"CuotaTotal={amountTax}&"
+            f"ImporteTotal={amountTotal}&"
+            f"Huella={previousHash}&"
+            f"FechaHoraHusoGenRegistro={registrationDate}"
         )
         sha_hash_code = sha256(verifactu_hash_string.encode("utf-8"))
         hash_code = sha_hash_code.hexdigest().upper()
