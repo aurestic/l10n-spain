@@ -1,4 +1,5 @@
 # Copyright 2024 Aures TIC - Almudena de La Puente <almudena@aurestic.es>
+# Copyright 2024 Aures Tic - Jose Zambudio <jose@aurestic.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import pytz
@@ -118,7 +119,7 @@ class AccountMove(models.Model):
         return ""
 
     def _get_verifactu_registration_date(self):
-        # Date format must be like "2024-01-01T19:20:30+01:00"
+        # Date format must be ISO 8601
         return pytz.utc.localize(self.create_date).isoformat()
 
     @api.model
@@ -139,22 +140,13 @@ class AccountMove(models.Model):
         previousHash = self._get_verifactu_previous_hash()
         registrationDate = self._get_verifactu_registration_date()
         verifactu_hash_string = (
-            "IDEmisorFactura={}&"
-            "NumSerieFactura={}&"
-            "FechaExpedicionFactura={}&"
-            "TipoFactura={}&"
-            "CuotaTotal={}&"
-            "ImporteTotal={}&"
-            "Huella={}&"
-            "FechaHoraHusoGenRegistro={}"
-        ).format(
-            issuerID,
-            serialNumber,
-            expeditionDate,
-            documentType,
-            amountTax,
-            amountTotal,
-            previousHash,
-            registrationDate,
+            f"IDEmisorFactura={issuerID}&"
+            f"NumSerieFactura={serialNumber}&"
+            f"FechaExpedicionFactura={expeditionDate}&"
+            f"TipoFactura={documentType}&"
+            f"CuotaTotal={amountTax}&"
+            f"ImporteTotal={amountTotal}&"
+            f"Huella={previousHash}&"
+            f"FechaHoraHusoGenRegistro={registrationDate}"
         )
         return verifactu_hash_string
