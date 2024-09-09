@@ -24,7 +24,8 @@ class AccountMove(models.Model):
             (
                 "F2",
                 _(
-                    "FACTURA SIMPLIFICADA Y FACTURAS SIN IDENTIFICACIÓN DEL DESTINATARIO ART. 6.1.D) RD 1619/2012"
+                    """FACTURA SIMPLIFICADA Y FACTURAS SIN IDENTIFICACIÓN DEL DESTINATARIO
+                    (ART. 6.1.D RD 1619/2012)"""
                 ),
             ),
             (
@@ -38,7 +39,8 @@ class AccountMove(models.Model):
             (
                 "F3",
                 _(
-                    "FACTURA EMITIDA EN SUSTITUCIÓN DE FACTURAS SIMPLIFICADAS FACTURADAS Y DECLARADAS"
+                    """FACTURA EMITIDA EN SUSTITUCIÓN DE FACTURAS SIMPLIFICADAS FACTURADAS
+                    Y DECLARADAS"""
                 ),
             ),
         ]
