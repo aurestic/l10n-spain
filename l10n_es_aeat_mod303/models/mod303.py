@@ -20,11 +20,11 @@ class L10nEsAeatMod303Report(models.Model):
         try:
             return self.env.ref(
                 'l10n_es_aeat_mod303.'
-                'aeat_mod303_2023_main_export_config').id
+                'aeat_mod303_2024_10_main_export_config').id
         except ValueError:
             return self.env.ref(
                 'l10n_es_aeat_mod303.'
-                'aeat_mod303_2022_main_export_config').id
+                'aeat_mod303_2023_main_export_config').id
 
     def _default_counterpart_303(self):
         return self.env['account.account'].search(
@@ -33,7 +33,8 @@ class L10nEsAeatMod303Report(models.Model):
     @api.multi
     @api.depends('tax_lines', 'tax_lines.amount')
     def _compute_total_devengado(self):
-        casillas_devengado = (152, 3, 155, 6, 9, 11, 13, 15, 158, 18, 21, 24, 26)
+        casillas_devengado = (
+            152, 167, 3, 155, 6, 9, 11, 13, 15, 158, 170, 18, 21, 24, 26)
         for report in self:
             tax_lines = report.tax_lines.filtered(
                 lambda x: x.field_number in casillas_devengado)
