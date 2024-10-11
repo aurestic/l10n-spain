@@ -3,6 +3,7 @@ six>=1.9.0
 unidecode==1.2.0
 unicodecsv
 xlrd
-zeep
+isodate==0.6.1
+zeep==3.4.0
 pyOpenSSL
 cffi==1.12.3
