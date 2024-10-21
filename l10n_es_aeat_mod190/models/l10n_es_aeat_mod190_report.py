@@ -552,7 +552,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number in (11, 15) and x.res_id == item.report_id.id
             )
             value = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 value += move_line.debit - move_line.credit
             item.percepciones_dinerarias = value
 
@@ -565,7 +567,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number in (12, 16) and x.res_id == item.report_id.id
             )
             value = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 value += move_line.credit - move_line.debit
             item.retenciones_dinerarias = value
 
@@ -578,7 +582,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number == 13 and x.res_id == item.report_id.id
             )
             pde = rde = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 pde += move_line.debit - move_line.credit
                 rde += move_line.credit - move_line.debit
             item.percepciones_en_especie = pde - rde
@@ -592,7 +598,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number == 13 and x.res_id == item.report_id.id
             )
             value = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 value += move_line.debit - move_line.credit
             item.ingresos_a_cuenta_efectuados = value
 
@@ -605,7 +613,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number == 13 and x.res_id == item.report_id.id
             )
             value = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 value += move_line.credit - move_line.debit
             item.ingresos_a_cuenta_repercutidos = value
 
@@ -618,7 +628,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number in (11, 15) and x.res_id == item.report_id.id
             )
             value = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 value += move_line.debit - move_line.credit
             item.percepciones_dinerarias_incap = value
 
@@ -630,7 +642,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number in (12, 16) and x.res_id == item.report_id.id
             )
             value = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 value += move_line.credit - move_line.debit
             item.retenciones_dinerarias_incap = value
 
@@ -642,7 +656,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number == 13 and x.res_id == item.report_id.id
             )
             pde = rde = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 pde += move_line.debit - move_line.credit
                 rde += move_line.credit - move_line.debit
             item.percepciones_en_especie_incap = pde - rde
@@ -655,7 +671,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number == 13 and x.res_id == item.report_id.id
             )
             value = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 value += move_line.debit - move_line.credit
             item.ingresos_a_cuenta_efectuados_incap = value
 
@@ -667,7 +685,9 @@ class L10nEsAeatMod190ReportLine(models.Model):
                 lambda x: x.field_number == 13 and x.res_id == item.report_id.id
             )
             value = 0.0
-            for move_line in tax_lines.move_line_ids:
+            for move_line in tax_lines.move_line_ids.filtered(
+                lambda mvl: mvl.partner_id == item.partner_id
+            ):
                 value += move_line.credit - move_line.debit
             item.ingresos_a_cuenta_repercutidos_incap = value
 
