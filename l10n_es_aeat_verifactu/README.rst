@@ -43,6 +43,10 @@ Known issues / Roadmap
  * Creación cabecera Veri*FACTU
  * Conexión WSDL
  * Queue + Encadenamiento
+ * Facturas simplificadas, no sujetas, a terceros..
+ * Modificación de facturas enviadas
+ * Anulación de facturas enviadas
+ * Test
 
 Bug Tracker
 ===========
@@ -67,6 +71,7 @@ Contributors
 ~~~~~~~~~~~~
 
 * Jose Zambudio <jose@aurestic.es>
+* Almudena de La Puente <almudena@aurestic.es>
 * Laura Cazorla <laura.cazorla@forgeflow.com>
 * Andreu Orensanz <andreu.orensanz@forgeflow.com>
 
