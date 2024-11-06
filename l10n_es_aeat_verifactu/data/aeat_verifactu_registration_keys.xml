@@ -97,9 +97,7 @@
         model="aeat.verifactu.registration.keys"
     >
         <field name="code">11</field>
-        <field
-            name="name"
-        >Operaciones de arrendamiento de local de negocio.</field>
+        <field name="name">Operaciones de arrendamiento de local de negocio.</field>
         <field name="verifactu_tax_key">01</field>
     </record>
     <record
@@ -127,7 +125,9 @@
         model="aeat.verifactu.registration.keys"
     >
         <field name="code">17</field>
-        <field name="name">Operación acogida a alguno de los regímenes previstos en el Capítulo XI del Título IX (OSS e IOSS)</field>
+        <field
+            name="name"
+        >Operación acogida a alguno de los regímenes previstos en el Capítulo XI del Título IX (OSS e IOSS)</field>
         <field name="verifactu_tax_key">01</field>
     </record>
     <record
@@ -143,7 +143,9 @@
         model="aeat.verifactu.registration.keys"
     >
         <field name="code">19</field>
-        <field name="name">Operaciones de actividades incluidas en el Régimen Especial de Agricultura, Ganadería y Pesca (REAGYP)</field>
+        <field
+            name="name"
+        >Operaciones de actividades incluidas en el Régimen Especial de Agricultura, Ganadería y Pesca (REAGYP)</field>
         <field name="verifactu_tax_key">01</field>
     </record>
     <record
@@ -251,9 +253,7 @@
         model="aeat.verifactu.registration.keys"
     >
         <field name="code">11</field>
-        <field
-            name="name"
-        >Operaciones de arrendamiento de local de negocio.</field>
+        <field name="name">Operaciones de arrendamiento de local de negocio.</field>
         <field name="verifactu_tax_key">03</field>
     </record>
     <record
@@ -297,7 +297,9 @@
         model="aeat.verifactu.registration.keys"
     >
         <field name="code">19</field>
-        <field name="name">Operaciones interiores exentas por aplicación artículo 25 Ley 19/1994</field>
+        <field
+            name="name"
+        >Operaciones interiores exentas por aplicación artículo 25 Ley 19/1994</field>
         <field name="verifactu_tax_key">03</field>
     </record>
 

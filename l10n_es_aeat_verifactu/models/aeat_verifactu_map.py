@@ -12,7 +12,8 @@ class AeatVerifactuMap(models.Model):
     date_to = fields.Date()
     map_lines = fields.One2many(
         comodel_name="aeat.verifactu.map.lines",
-        inverse_name="verifactu_map_id", string="Lines"
+        inverse_name="verifactu_map_id",
+        string="Lines",
     )
 
     @api.constrains("date_from", "date_to")

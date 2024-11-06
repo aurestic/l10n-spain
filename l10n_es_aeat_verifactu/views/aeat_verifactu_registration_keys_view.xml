@@ -22,15 +22,16 @@
                 <field name="code" />
                 <field name="verifactu_tax_key" />
                 <group expand="0" string="Group By">
-                    <filter string="Tax Type" name="tax_type" context="{'group_by':'verifactu_tax_key'}" />
+                    <filter
+                        string="Tax Type"
+                        name="tax_type"
+                        context="{'group_by':'verifactu_tax_key'}"
+                    />
                 </group>
             </search>
         </field>
     </record>
-    <record
-        id="action_aeat_verifactu_registration_keys"
-        model="ir.actions.act_window"
-    >
+    <record id="action_aeat_verifactu_registration_keys" model="ir.actions.act_window">
         <field name="name">AEAT Verifactu Registration Keys</field>
         <field name="res_model">aeat.verifactu.registration.keys</field>
         <field name="view_mode">tree,form</field>

@@ -40,7 +40,7 @@
             </form>
         </field>
     </record>
-    <record id="action_aeat_verifactu_mapping" model="ir.actions.act_window" >
+    <record id="action_aeat_verifactu_mapping" model="ir.actions.act_window">
         <field name="name">Aeat Verifactu Map</field>
         <field name="res_model">aeat.verifactu.map</field>
         <field name="view_mode">tree,form</field>

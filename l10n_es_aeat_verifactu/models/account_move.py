@@ -204,18 +204,19 @@ class AccountMove(models.Model):
             if self.verifactu_refund_type == "I":
                 inv_dict["FacturasRectificadas"] = []
                 origin = self.reversed_entry_id
-                orig_document_date = self._change_date_format(
-                    origin._get_document_date()
-                )
-                orig_serial_number = origin._get_document_serial_number()
-                origin_data = {
-                    "IDFacturaRectificada": {
-                        "IDEmisorFactura": company_vat,
-                        "NumSerieFactura": orig_serial_number,
-                        "FechaExpedicionFactura": orig_document_date,
+                if origin:
+                    orig_document_date = self._change_date_format(
+                        origin._get_document_date()
+                    )
+                    orig_serial_number = origin._get_document_serial_number()
+                    origin_data = {
+                        "IDFacturaRectificada": {
+                            "IDEmisorFactura": company_vat,
+                            "NumSerieFactura": orig_serial_number,
+                            "FechaExpedicionFactura": orig_document_date,
+                        }
                     }
-                }
-                inv_dict["FacturasRectificadas"].append(origin_data)
+                    inv_dict["FacturasRectificadas"].append(origin_data)
                 # inv_dict["ImporteRectificacion"] = {
                 #     "BaseRectificada": abs(origin.amount_untaxed_signed),
                 #     "CuotaRectificada": abs(

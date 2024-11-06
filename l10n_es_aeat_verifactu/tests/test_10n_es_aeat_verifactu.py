@@ -19,7 +19,13 @@ class TestL10nEsAeatVerifactuBase(TestL10nEsAeatModBase, TestL10nEsAeatCertifica
     def setUpClass(cls):
         super().setUpClass()
         cls.maxDiff = None
-        cls.fp_nacional = cls.browse_ref(f"l10n_es.{cls.company.id}_fp_nacional")
+        cls.fp_nacional = cls.env.ref(f"l10n_es.{cls.company.id}_fp_nacional")
+        cls.fp_registration_key_01 = cls.env.ref(
+            "l10n_es_aeat_verifactu.aeat_verifactu_registration_keys_01"
+        )
+        cls.fp_nacional.verifactu_registration_key = cls.fp_registration_key_01
+        cls.fp_recargo = cls.env.ref(f"l10n_es.{cls.company.id}_fp_recargo")
+        cls.fp_recargo.verifactu_registration_key = cls.fp_registration_key_01
         cls.partner = cls.env["res.partner"].create(
             {"name": "Test partner", "vat": "89890001K"}
         )
@@ -117,19 +123,12 @@ class TestL10nEsAeatVerifactuBase(TestL10nEsAeatModBase, TestL10nEsAeatCertifica
         comparing the expected verifactu dict with .
         """
         module = module or "l10n_es_aeat_verifactu"
-        domain = [
-            ("code", "=", "01"),
-            ("verifactu_tax_key", "=", "iva"),
-        ]
-        verifactu_key_obj = self.env["aeat.verifactu.registration.keys"]
         vals = {
             "name": "TEST001",
             "partner_id": self.partner.id,
             "invoice_date": "2024-01-01",
             "move_type": inv_type,
-            "verifactu_registration_key": verifactu_key_obj.search(domain, limit=1),
             "invoice_line_ids": [],
-            "fiscal_position_id": self.fp_nacional.id,
         }
         for line in lines:
             vals["invoice_line_ids"].append(
@@ -166,33 +165,32 @@ class TestL10nEsAeatVerifactu(TestL10nEsAeatVerifactuBase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.invoice.action_post()
-        cls.invoice.name = "INV001"
-        cls.invoice.refund_invoice_ids = cls.invoice.copy()
-        cls.user = cls.env["res.users"].create(
-            {
-                "name": "Test user",
-                "login": "test_user",
-                "groups_id": [(4, cls.env.ref("account.group_account_invoice").id)],
-                "email": "somebody@somewhere.com",
-            }
-        )
-        cls.tax_agencies = cls.env["aeat.tax.agency"].search(
-            [("verifactu_wsdl_out", "!=", False)]
-        )
 
     def test_get_invoice_data(self):
         mapping = [
-            ("out_invoice", [(100, ["s_iva10b"]), (200, ["s_iva21s"])], {}),
             (
                 "out_invoice",
-                [(200, ["s_iva21s", "s_req52"])],
-                {},
+                [(100, ["s_iva10b"]), (200, ["s_iva21s"])],
+                {
+                    "fiscal_position_id": self.fp_nacional.id,
+                    "verifactu_registration_key": self.fp_registration_key_01.id,
+                },
             ),
             (
                 "out_refund",
                 [(100, ["s_iva10b"]), (100, ["s_iva10b"]), (200, ["s_iva21s"])],
-                {},
+                {
+                    "fiscal_position_id": self.fp_nacional.id,
+                    "verifactu_registration_key": self.fp_registration_key_01.id,
+                },
+            ),
+            (
+                "out_invoice",
+                [(200, ["s_iva21s", "s_req52"])],
+                {
+                    "fiscal_position_id": self.fp_recargo.id,
+                    "verifactu_registration_key": self.fp_registration_key_01.id,
+                },
             ),
         ]
         for inv_type, lines, extra_vals in mapping:

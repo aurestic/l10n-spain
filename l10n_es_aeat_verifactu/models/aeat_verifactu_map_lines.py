@@ -12,5 +12,7 @@ class AeatVertiactuMapLines(models.Model):
     name = fields.Char()
     taxes = fields.Many2many(comodel_name="account.tax.template")
     verifactu_map_id = fields.Many2one(
-        comodel_name="aeat.verifactu.map", string="Aeat Verifactu Map", ondelete="cascade"
+        comodel_name="aeat.verifactu.map",
+        string="Aeat Verifactu Map",
+        ondelete="cascade",
     )
