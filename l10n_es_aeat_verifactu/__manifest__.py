@@ -16,7 +16,7 @@
         "l10n_es",
         "l10n_es_aeat",
         "account_invoice_refund_link",
-        # "queue_job",
+        "queue_job",
     ],
     "data": [
         "data/aeat_verifactu_tax_agency_data.xml",

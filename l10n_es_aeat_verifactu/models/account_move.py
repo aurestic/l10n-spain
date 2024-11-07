@@ -80,28 +80,28 @@ class AccountMove(models.Model):
 
     def _get_document_date(self):
         """
-        TODO: this method is the same in l10n_es_aeat_registration_oca, so I think that
+        TODO: this method is the same in l10n_es_aeat_sii_oca, so I think that
         it should be directly in l10n_es_aeat
         """
         return self.invoice_date
 
     def _aeat_get_partner(self):
         """
-        TODO: this method is the same in l10n_es_aeat_registration_oca, so I think that
+        TODO: this method is the same in l10n_es_aeat_sii_oca, so I think that
         it should be directly in l10n_es_aeat
         """
         return self.commercial_partner_id
 
     def _get_document_fiscal_date(self):
         """
-        TODO: this method is the same in l10n_es_aeat_registration_oca, so I think that
+        TODO: this method is the same in l10n_es_aeat_sii_oca, so I think that
         it should be directly in l10n_es_aeat
         """
         return self.date
 
     def _get_mapping_key(self):
         """
-        TODO: this method is the same in l10n_es_aeat_registration_oca, so I think that
+        TODO: this method is the same in l10n_es_aeat_sii_oca, so I think that
         it should be directly in l10n_es_aeat
         """
         return self.move_type
@@ -111,7 +111,7 @@ class AccountMove(models.Model):
 
     def _get_document_serial_number(self):
         """
-        TODO: this method is the same in l10n_es_aeat_registration_oca, so I think that
+        TODO: this method is the same in l10n_es_aeat_sii_oca, so I think that
         it should be directly in l10n_es_aeat
         """
         serial_number = (self.name or "")[0:60]
@@ -190,7 +190,7 @@ class AccountMove(models.Model):
         verifactu_doc_type = self._get_verifactu_document_type()
         registroAlta = {}
         inv_dict = {
-            "IDVersion": 1.0,  # TODO
+            "IDVersion": self._get_verifactu_version(),
             "IDFactura": {
                 "IDEmisorFactura": company_vat,
                 "NumSerieFactura": serial_number,
@@ -345,7 +345,6 @@ class AccountMove(models.Model):
         return taxes_dict, self.amount_tax_signed, self.amount_total_signed
 
     def _get_operation_type(self, tax_line, taxes_S1, taxes_S2, taxes_N1, taxes_N2):
-        # TODO
         """
         S1	Operación Sujeta y No exenta - Sin inversión del sujeto pasivo.
         S2	Operación Sujeta y No exenta - Con Inversión del sujeto pasivo

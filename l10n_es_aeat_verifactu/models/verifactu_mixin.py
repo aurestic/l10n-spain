@@ -3,11 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import json
-
-###########################################
-# esto a borrar cuando funcione bien el wdsl
-# y también borrar la función de _connect_aeat
-# que usará la del aeat_mixin
 import logging
 from hashlib import sha256
 
@@ -20,6 +15,13 @@ from odoo.tools.float_utils import float_compare
 
 from odoo.addons.l10n_es_aeat.models.aeat_mixin import round_by_keys
 
+###########################################
+# revisar los imports que no hagan falta
+# cuando funcione bien el _connect_aeat sin tener que poner
+# el forbid_entities, y se pueda borrar la función en
+# este fichero para usar la del aeat_mixin
+
+
 _logger = logging.getLogger(__name__)
 
 try:
@@ -28,10 +30,8 @@ try:
     from zeep.transports import Transport
 except (ImportError, IOError) as err:
     _logger.debug(err)
-# hasta aquí
-#########
 
-VERIFACTU_VERSION = "0.12.2"
+VERIFACTU_VERSION = "1.0"
 VERIFACTU_DATE_FORMAT = "%d-%m-%Y"
 VERIFACTU_MACRODATA_LIMIT = 100000000.0
 
@@ -49,7 +49,7 @@ class VerifactuMixin(models.AbstractModel):
     verifactu_hash = fields.Char(compute="_compute_verifactu_hash")
     verifactu_refund_type = fields.Selection(
         selection=[
-            # ('S', 'By substitution'), - en sii no está soportada, aquí igual?
+            # ('S', 'By substitution'), - en sii no está soportado, aquí igual?
             ("I", "By differences"),
         ],
         compute="_compute_verifactu_refund_type",
@@ -224,6 +224,9 @@ class VerifactuMixin(models.AbstractModel):
 
     def _get_verifactu_taxes_and_total(self):
         raise NotImplementedError
+
+    def _get_verifactu_version(self):
+        return VERIFACTU_VERSION
 
     def _get_receiver_dict(self):
         raise NotImplementedError
