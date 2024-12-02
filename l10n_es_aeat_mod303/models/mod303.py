@@ -386,7 +386,7 @@ class L10nEsAeatMod303Report(models.Model):
                 self.fiscalyear_id.date_start < '2023-01-01'):
             self.export_config = self.env.ref(
                 'l10n_es_aeat_mod303.'
-                'aeat_mod303_2022_main_export_config')
+                'aeat_mod303_2024_10_main_export_config')
         else:
             self.export_config = self.env.ref(
                 'l10n_es_aeat_mod303.'
