@@ -416,8 +416,9 @@ class L10nEsVatBook(models.Model):
                     tax_group = sp_taxes_dic[tax_line["tax_id"]]["special_tax_group"]
                     line_vals["special_tax_group"] = tax_group
                     tax_line["special_tax_group"] = tax_group
-                    sp_taxes[tuple(tax_line["other_tax_ids"])] = tax_line
-                tax_line.pop("other_tax_ids")
+                    if "other_tax_ids" in tax_line:
+                        sp_taxes[tuple(tax_line["other_tax_ids"])] = tax_line
+                tax_line.pop("other_tax_ids", None)
             # Second loop for putting the values in the other lines
             if sp_taxes:
                 for tax_line in tax_lines.values():
@@ -459,7 +460,11 @@ class L10nEsVatBook(models.Model):
                     domain += [
                         ("tax_agency_ids", "in", [False] + rec.tax_agency_ids.ids),
                     ]
-                map_lines = self.env["aeat.vat.book.map.line"].search(domain)
+                map_lines = (
+                    self.env["aeat.vat.book.map.line"]
+                    .with_context(active_test=False)
+                    .search(domain)
+                )
                 taxes = self.env["account.tax"]
                 accounts = {}
                 for map_line in map_lines:
