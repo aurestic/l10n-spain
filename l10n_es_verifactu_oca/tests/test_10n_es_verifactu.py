@@ -262,18 +262,8 @@ class TestL10nEsAeatVerifactuQR(TestVerifactuCommon):
             "odoo.addons.l10n_es_verifactu_oca.models."
             "verifactu_invoice_entry.VerifactuInvoiceEntry._connect_verifactu"
         ) as mock_connect:
-            mock_service = MagicMock()
-            module = "l10n_es_verifactu_oca"
-            json_file = "verifactu_mocked_response_1.json"
-            path = get_resource_path(module, "tests/json", json_file)
-            if not path:
-                raise Exception("Incorrect JSON file: %s" % json_file)
-            with open(path, "r") as f:
-                response_dict = json.loads(f.read())
-            mock_service.RegFactuSistemaFacturacion.return_value = response_dict
-            mock_connect.return_value = mock_service
-            # Execute the cron job to send the invoice to VERI*FACTU
-            self.env["verifactu.invoice.entry"]._cron_send_documents_to_verifactu()
+            json_file = "verifactu_mocked_response_correct.json"
+            self.mock_test(mock_connect, json_file)
             self.assertEqual(
                 self.invoice.aeat_state,
                 "sent",
@@ -283,6 +273,129 @@ class TestL10nEsAeatVerifactuQR(TestVerifactuCommon):
                 self.invoice.verifactu_csv,
                 "A-Y23JP3582934",
                 "CSV should be generated correctly after sending to VERI*FACTU.",
+            )
+
+    def mock_test(self, mock_connect, json_file):
+        mock_service = MagicMock()
+        module = "l10n_es_verifactu_oca"
+        path = get_resource_path(module, "tests/json", json_file)
+        if not path:
+            raise Exception("Incorrect JSON file: %s" % json_file)
+        with open(path, "r") as f:
+            response_dict = json.loads(f.read())
+        # Update the response to use the actual invoice name from the test
+        if "RespuestaLinea" in response_dict and response_dict["RespuestaLinea"]:
+            for line in response_dict["RespuestaLinea"]:
+                if "IDFactura" in line and "NumSerieFactura" in line["IDFactura"]:
+                    line["IDFactura"]["NumSerieFactura"] = self.invoice.name
+        mock_service.RegFactuSistemaFacturacion.return_value = response_dict
+        mock_connect.return_value = mock_service
+        # Execute the cron job to send the invoice to VERI*FACTU
+        self.env["verifactu.invoice.entry"]._cron_send_documents_to_verifactu()
+
+    def test_send_invoices_to_verifactu_with_incorrect_response(self):
+        self._activate_certificate(self.certificate_password)
+        self.invoice.action_post()
+        with patch(
+            "odoo.addons.l10n_es_verifactu_oca.models."
+            "verifactu_invoice_entry.VerifactuInvoiceEntry._connect_verifactu"
+        ) as mock_connect:
+            json_file = "verifactu_mocked_response_incorrect.json"
+            self.mock_test(mock_connect, json_file)
+            self.assertEqual(
+                self.invoice.aeat_state,
+                "incorrect",
+                "Invoice should be marked as incorrect after VERI*FACTU processing.",
+            )
+            self.assertEqual(
+                self.invoice.aeat_send_failed,
+                True,
+                "Invoice send be marked as failed after VERI*FACTU processing.",
+            )
+
+    def test_send_invoices_to_verifactu_duplicated(self):
+        self._activate_certificate(self.certificate_password)
+        self.invoice.action_post()
+        with patch(
+            "odoo.addons.l10n_es_verifactu_oca.models."
+            "verifactu_invoice_entry.VerifactuInvoiceEntry._connect_verifactu"
+        ) as mock_connect:
+            json_file = "verifactu_mocked_response_correct.json"
+            self.mock_test(mock_connect, json_file)
+            self.assertEqual(
+                self.invoice.aeat_state,
+                "sent",
+                "Invoice should be marked as sent after VERI*FACTU processing.",
+            )
+            # now we send the same invoice again
+            # we need to truncate the aeat_state as if the previous response was incorrect
+            # to force a new send a get the duplicated response
+            self.invoice.aeat_state = "incorrect"
+            self.invoice.resend_verifactu()
+            json_file = "verifactu_mocked_response_duplicated.json"
+            self.mock_test(mock_connect, json_file)
+            self.assertEqual(
+                self.invoice.aeat_state,
+                "incorrect",
+                "Invoice should be marked as incorrect after VERI*FACTU processing.",
+            )
+
+    def test_cancel_invoices_to_verifactu(self):
+        self._activate_certificate(self.certificate_password)
+        self.invoice.action_post()
+        with patch(
+            "odoo.addons.l10n_es_verifactu_oca.models."
+            "verifactu_invoice_entry.VerifactuInvoiceEntry._connect_verifactu"
+        ) as mock_connect:
+            json_file = "verifactu_mocked_response_correct.json"
+            self.mock_test(mock_connect, json_file)
+            self.assertEqual(
+                self.invoice.aeat_state,
+                "sent",
+                "Invoice should be marked as sent after VERI*FACTU processing.",
+            )
+
+            # now send the cancellation to verifactu with an incorrect cancellation response
+            wiz = self.env["verifactu.cancel.invoice.wizard"].create(
+                {"invoice_id": self.invoice.id, "cancel_reason": "Test Cancel Reason"}
+            )
+            wiz.cancel_invoice_in_verifactu()
+            self.assertEqual(
+                self.invoice.state, "cancel", "Invoice should be in cancel state"
+            )
+            self.assertEqual(
+                self.invoice.verifactu_cancel_reason,
+                "Test Cancel Reason",
+                "Invoice cancel reason should be Test Cancel Reason",
+            )
+            json_file = "verifactu_mocked_response_cancel_incorrect.json"
+            self.mock_test(mock_connect, json_file)
+            self.assertEqual(
+                self.invoice.aeat_state,
+                "cancel_incorrect",
+                "Invoice should be marked as incorrect cancellation"
+                "after VERI*FACTU processing.",
+            )
+
+            # now send the cancellation to verifactu with a cancellation with errors response
+            self.invoice.cancel_verifactu()
+            json_file = "verifactu_mocked_response_cancel_with_errors.json"
+            self.mock_test(mock_connect, json_file)
+            self.assertEqual(
+                self.invoice.aeat_state,
+                "cancel_w_errors",
+                "Invoice should be marked as cancelled with errors"
+                "after VERI*FACTU processing.",
+            )
+
+            # finally send the cancellation to verifactu with a correct cancellation response
+            self.invoice.cancel_verifactu()
+            json_file = "verifactu_mocked_response_cancel.json"
+            self.mock_test(mock_connect, json_file)
+            self.assertEqual(
+                self.invoice.aeat_state,
+                "cancel",
+                "Invoice should be marked as cancelled after VERI*FACTU processing.",
             )
 
 
@@ -369,15 +482,20 @@ class TestVerifactuSendResponse(TestVerifactuCommon):
         ActivityType = self.env.ref("mail.mail_activity_data_warning")
         mock_service = MagicMock()
         module = "l10n_es_verifactu_oca"
-        json_file = "verifactu_mocked_response_2.json"
+        json_file = "verifactu_mocked_response_accepted_with_errors.json"
         path = get_resource_path(module, "tests/json", json_file)
         if not path:
             raise Exception("Incorrect JSON file: %s" % json_file)
         with open(path, "r") as f:
             response_dict = json.loads(f.read())
+        self.invoice.action_post()
+        # Update the response to match the actual invoice name AFTER posting
+        response_dict["RespuestaLinea"][0]["IDFactura"][
+            "NumSerieFactura"
+        ] = self.invoice.name
+        # Set up the mock AFTER updating the JSON
         mock_service.RegFactuSistemaFacturacion.return_value = response_dict
         mock_connect.return_value = mock_service
-        self.invoice.action_post()
         self.env["verifactu.invoice.entry"]._cron_send_documents_to_verifactu()
         activity = MailActivity.search(
             [
